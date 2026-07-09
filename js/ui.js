@@ -1,42 +1,42 @@
 /* ============================================================
-   合成攻城 · Merge Siege —— DOM 界面管理
+   水果突击 · Fruit Assault —— DOM 界面管理
    ============================================================ */
 
 /* ——— 科技项配置 ——— */
 const UPGRADE_GROUPS = [
   {
-    title: '🏹 弓营 · 后排输出',
+    title: '🍇 葡萄营 · 后排输出',
     items: [
-      { key: 'bow_atk', label: '弓营攻击', type: 'bow', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
-      { key: 'bow_hp',  label: '弓营血量', type: 'bow', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
+      { key: 'bow_atk', label: '葡萄攻击', type: 'bow', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
+      { key: 'bow_hp',  label: '葡萄韧性', type: 'bow', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
     ],
   },
   {
-    title: '🗡️ 刀营 · 破盾突进',
+    title: '🍌 香蕉营 · 突击破盾',
     items: [
-      { key: 'sword_atk', label: '刀营攻击', type: 'sword', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
-      { key: 'sword_hp',  label: '刀营血量', type: 'sword', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
+      { key: 'sword_atk', label: '香蕉攻击', type: 'sword', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
+      { key: 'sword_hp',  label: '香蕉韧性', type: 'sword', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
     ],
   },
   {
-    title: '🔱 枪营 · 中线抗压',
+    title: '🍍 菠萝营 · 中线抗压',
     items: [
-      { key: 'spear_atk', label: '枪营攻击', type: 'spear', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
-      { key: 'spear_hp',  label: '枪营血量', type: 'spear', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
+      { key: 'spear_atk', label: '菠萝攻击', type: 'spear', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
+      { key: 'spear_hp',  label: '菠萝韧性', type: 'spear', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
     ],
   },
   {
-    title: '🛡️ 盾营 · 前排守线',
+    title: '🍉 西瓜营 · 前排守线',
     items: [
-      { key: 'shield_atk', label: '盾营攻击', type: 'shield', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
-      { key: 'shield_hp',  label: '盾营血量', type: 'shield', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
+      { key: 'shield_atk', label: '西瓜攻击', type: 'shield', stat: 'atk', maxLv: UPGRADE_MAX, wall: false },
+      { key: 'shield_hp',  label: '西瓜韧性', type: 'shield', stat: 'hp',  maxLv: UPGRADE_MAX, wall: false },
     ],
   },
   {
-    title: '🏰 战略科技',
+    title: '🍹 果园战略科技',
     items: [
-      { key: 'wall', label: '我方城墙', type: null, stat: null, maxLv: WALL_UPGRADE_MAX, wall: true },
-      { key: 'sp',   label: '士气号角', type: null, stat: null, maxLv: SP_UPGRADE_MAX, sp: true },
+      { key: 'wall', label: '我方果堡', type: null, stat: null, maxLv: WALL_UPGRADE_MAX, wall: true },
+      { key: 'sp',   label: '果汁泵', type: null, stat: null, maxLv: SP_UPGRADE_MAX, sp: true },
     ],
   },
 ];
@@ -58,7 +58,7 @@ function addItemLv(item) {
 
 function itemEffectText(item) {
   if (item.wall) return `+${WALL_PER_LV}耐久/级`;
-  if (item.sp) return '开局士气/上限提升';
+  if (item.sp) return '开局果汁能量/上限提升';
   return `+${Math.round(UPGRADE_PER_LV * 100)}%/级`;
 }
 
@@ -92,7 +92,7 @@ function renderUpgrades() {
         <span class="uilabel">${item.label} <span class="uilevel">Lv.${lv}</span><br>
           <small>${itemEffectText(item)}${node ? ' · ' + node : ''}</small>
         </span>
-        <span class="uicost ${maxed ? 'maxed' : canAfford ? 'can-afford' : ''}">${maxed ? 'MAX' : cost + '💰'}</span>
+        <span class="uicost ${maxed ? 'maxed' : canAfford ? 'can-afford' : ''}">${maxed ? 'MAX' : cost + '🍋'}</span>
       `;
       if (canAfford) {
         el.addEventListener('click', () => {
@@ -124,8 +124,8 @@ function showOverflowPopup() {
       const el = document.createElement('div');
       el.style.cssText = `
         display:flex;align-items:center;gap:5px;padding:8px 11px;
-        background:rgba(255,255,255,0.07);border:1px solid rgba(255,228,90,0.12);
-        border-radius:10px;cursor:pointer;color:#e8dcc0;font-size:13px;
+        background:rgba(255,255,255,0.42);border:1px solid rgba(72,174,70,0.16);
+        border-radius:10px;cursor:pointer;color:#416329;font-size:13px;
       `;
       el.innerHTML = `${t.icon} ${t.name} Lv.${item.level}`;
       el.title = '点击后选择棋盘空格放置';
@@ -199,16 +199,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('upgradePanel').classList.add('hide');
   });
 
-  const simBtn = document.getElementById('btnSim');
-  if (simBtn) {
-    simBtn.addEventListener('click', () => {
-      document.getElementById('simPanel').classList.remove('hide');
-      if (typeof renderBalanceSim === 'function') renderBalanceSim(20, 80);
-    });
-  }
-  const simClose = document.getElementById('btnSimClose');
-  if (simClose) simClose.addEventListener('click', () => document.getElementById('simPanel').classList.add('hide'));
-
   document.getElementById('btnHelpClose').addEventListener('click', () => {
     document.getElementById('helpPanel').classList.add('hide');
   });
@@ -229,6 +219,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('resultPanel').classList.add('hide');
     initLevel(state.currentLevel + 1);
   });
+
+  const simBtn = document.getElementById('btnSim');
+  if (simBtn) {
+    simBtn.addEventListener('click', () => {
+      const panel = document.getElementById('simPanel');
+      const result = document.getElementById('simResult');
+      panel.classList.remove('hide');
+      result.innerHTML = typeof renderBalanceSim === 'function'
+        ? renderBalanceSim(20, 80)
+        : '模拟器未加载。';
+    });
+  }
+
+  const simClose = document.getElementById('btnSimClose');
+  if (simClose) simClose.addEventListener('click', () => document.getElementById('simPanel').classList.add('hide'));
 
   const resetBtn = document.getElementById('btnReset');
   let resetTimer = null;
