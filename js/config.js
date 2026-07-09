@@ -63,6 +63,7 @@ const BASE_WALL_HP = 20;
 const BALL_SPAWN_INTERVAL = 5;    // 每5秒产1个球
 const SOLDIER_SPAWN_INTERVAL = 5; // 每5秒产1个兵
 const OVERFLOW_MAX = 10;          // 溢出队列上限
+const MAX_SOLDIERS = 18;          // 每方战场兵上限
 
 /* ——— 经济 ——— */
 function upgradeCost(lv) {

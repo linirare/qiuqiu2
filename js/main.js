@@ -148,15 +148,19 @@ function update(dt) {
 
 /* ——— 产兵（暂为 Phase 3 占位，先做简单行走） ——— */
 function spawnPlayerSoldiers() {
+  // 上限检测
+  const alive = state.playerSoldiers.filter(s => s.alive).length;
+  if (alive >= MAX_SOLDIERS) return;
+
   const fy = LAYOUT.fieldY + LAYOUT.fieldH / 2;
+  const remaining = MAX_SOLDIERS - alive;
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const ball = state.playerSlots[r][c];
       if (!ball) continue;
 
-      // 等级≥3概率多产1个，≥5概率多产2个
       const extra = ball.level >= 5 ? 2 : ball.level >= 3 ? 1 : 0;
-      const count = 1 + (Math.random() < ball.level * 0.1 ? extra : 0);
+      const count = Math.min(1 + (Math.random() < ball.level * 0.1 ? extra : 0), remaining);
 
       for (let i = 0; i < count; i++) {
         const center = slotCenter(r, c, false);
@@ -174,14 +178,18 @@ function spawnPlayerSoldiers() {
 }
 
 function spawnEnemySoldiers() {
+  const alive = state.enemySoldiers.filter(s => s.alive).length;
+  if (alive >= MAX_SOLDIERS) return;
+
   const fy = LAYOUT.fieldY + LAYOUT.fieldH / 2;
+  const remaining = MAX_SOLDIERS - alive;
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const ball = state.enemySlots[r][c];
       if (!ball) continue;
 
       const extra = ball.level >= 5 ? 2 : ball.level >= 3 ? 1 : 0;
-      const count = 1 + (Math.random() < ball.level * 0.1 ? extra : 0);
+      const count = Math.min(1 + (Math.random() < ball.level * 0.1 ? extra : 0), remaining);
 
       for (let i = 0; i < count; i++) {
         const center = slotCenter(r, c, true);
