@@ -128,3 +128,17 @@ function playSfx(name) {
     case 'lose': sfxLose(); break;
   }
 }
+
+/* Initialize audio context on first user interaction */
+(function initAudioOnInteraction() {
+  function unlock() {
+    ensureAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    document.removeEventListener('click', unlock);
+    document.removeEventListener('touchstart', unlock);
+    document.removeEventListener('keydown', unlock);
+  }
+  document.addEventListener('click', unlock);
+  document.addEventListener('touchstart', unlock);
+  document.addEventListener('keydown', unlock);
+})();
