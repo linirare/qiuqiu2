@@ -38,10 +38,32 @@ function hideBottomNav() {
 
 /* Placeholder render functions (filled in later phases) */
 function refreshHomeStats() {
+  // Update gold display
   const goldEl = document.getElementById('menuGold');
-  const stageEl = document.getElementById('menuStage');
   if (goldEl) goldEl.textContent = meta.gold || 0;
+
+  // Update stage display
+  const stageEl = document.getElementById('menuStage');
   if (stageEl) stageEl.textContent = meta.highestLevel || 1;
+
+  // Update stats card if exists
+  const totalStarsEl = document.getElementById('homeTotalStars');
+  if (totalStarsEl) {
+    const totalStars = Object.values(meta.stars || {}).reduce((a,b) => a + b, 0);
+    totalStarsEl.textContent = totalStars;
+  }
+  const totalWinsEl = document.getElementById('homeTotalWins');
+  if (totalWinsEl) totalWinsEl.textContent = meta.totalWins || 0;
+  const highestLevelEl = document.getElementById('homeHighestLevel');
+  if (highestLevelEl) highestLevelEl.textContent = meta.highestLevel || 1;
+}
+
+/* Handle "开始突击" button click - switch to stages tab and start game */
+function startBattle() {
+  switchTab('stages');
+  // Start at player's highest available level
+  const level = meta.highestLevel || 1;
+  initLevel(level);
 }
 
 function renderStageSelect() {
@@ -218,21 +240,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnStart').addEventListener('click', () => {
     meta.deck = normalizeDeck(meta.deck);
     saveMeta();
-    document.getElementById('menuPanel').classList.add('hide');
-    initLevel(meta.highestLevel || 1);
+    startBattle();
+  });
+  document.getElementById('btnDeck').addEventListener('click', () => {
+    switchTab('characters');
   });
   document.getElementById('btnUpgrade').addEventListener('click', () => {
-    refreshGold();
-    document.getElementById('upgradePanel').classList.remove('hide');
-    renderUpgrades();
+    switchTab('characters');
   });
   document.getElementById('btnUpClose').addEventListener('click', () => document.getElementById('upgradePanel').classList.add('hide'));
   document.getElementById('btnHelpClose').addEventListener('click', () => document.getElementById('helpPanel').classList.add('hide'));
   document.getElementById('btnRetry').addEventListener('click', () => { document.getElementById('resultPanel').classList.add('hide'); initLevel(state.currentLevel); });
   document.getElementById('btnMenu').addEventListener('click', () => {
     document.getElementById('resultPanel').classList.add('hide');
-    document.getElementById('menuPanel').classList.remove('hide');
     state.phase = 'menu';
+    switchTab('home');
     refreshGold();
   });
   document.getElementById('btnNext').addEventListener('click', () => { document.getElementById('resultPanel').classList.add('hide'); initLevel(state.currentLevel + 1); });
