@@ -73,9 +73,9 @@ function update(dt) {
 
   if (!state._spTimer) state._spTimer = 0;
   state._spTimer += dt;
-  if (state._spTimer >= SP_PASSIVE && state.sp < 6) {
+  if (state._spTimer >= SP_PASSIVE && state.sp < getSpRecoverCap(meta)) {
     state._spTimer -= SP_PASSIVE;
-    state.sp = Math.min(state.sp + 1, SP_MAX);
+    state.sp = Math.min(state.sp + 1, getSpMax(meta));
     addFx(36, LAYOUT.fieldY + LAYOUT.fieldH - 46, '+1士气', THEME.gold, 11);
   }
 
@@ -187,6 +187,12 @@ function update(dt) {
 let dt_global = 0;
 let last = 0;
 
+function reportHtml() {
+  const report = state.lastBattleReport;
+  if (!report || !report.tips || report.tips.length === 0) return '';
+  return `<br><span style="color:#ffe45a">战斗复盘</span><br>${report.tips.slice(0, 4).map(t => `· ${t}`).join('<br>')}`;
+}
+
 function onGameOver(win) {
   const panel = document.getElementById('resultPanel');
   const title = document.getElementById('resultTitle');
@@ -217,6 +223,7 @@ function onGameOver(win) {
       第 ${state.currentLevel} 关 · ${elapsed}秒 · 城墙剩余${Math.round(wallRatio * 100)}%<br>
       💰 +${totalReward}（基础${state.levelConfig.reward}${bonus > 0 ? ' + 星级'+bonus : ''}）<br>
       ⚔ 击杀 ${state.kills} · 合成 ${state.merges} 次${bestType ? ' · 王牌: ' + bestType + ' ' + state.maxSoldierAtk + '攻' : ''}
+      ${reportHtml()}
     `;
     playSfx('win');
     if (state.currentLevel >= meta.highestLevel) meta.highestLevel = state.currentLevel + 1;
@@ -228,6 +235,7 @@ function onGameOver(win) {
       敌军突破了我方城墙。<br>
       建议先升级兵营攻击/血量，或双击高等级兵营补一波兵。<br>
       ⚔ 击杀 ${state.kills} · 合成 ${state.merges} 次 · ${elapsed}秒
+      ${reportHtml()}
     `;
     playSfx('lose');
     nextBtn.classList.add('hide');
