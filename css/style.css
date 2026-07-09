@@ -421,7 +421,9 @@ body::before {
 .char-rarity.epic { background: #f0e0ff; color: #7b3db5; }
 
 .char-detail {
-  position: fixed; bottom: 0; left: 0; right: 0;
+  position: fixed; bottom: 0;
+  left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px;
   background: linear-gradient(180deg, rgba(255,251,235,0.98), rgba(240,255,210,0.99));
   border-top: 2px solid rgba(120,180,80,0.2);
   border-radius: 20px 20px 0 0;
