@@ -83,7 +83,7 @@ function findTarget(s, enemies) {
 }
 
 /* ——— 移动至目标 ——— */
-function moveToTarget(s, target) {
+function moveToTarget(s, target, skipClamp = false) {
   const dx = target.x - s.x;
   const dy = target.y - s.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
@@ -91,10 +91,12 @@ function moveToTarget(s, target) {
   const step = SOLDIER_SPEED * dt_global;
   s.x += (dx / dist) * Math.min(step, dist);
   s.y += (dy / dist) * Math.min(step, dist);
-  // 边界夹紧，不越墙
-  const fy = LAYOUT.fieldY, fh = LAYOUT.fieldH;
-  if (s.side === 'player') s.y = Math.max(s.y, fy + 4);
-  else s.y = Math.min(s.y, fy + fh - 4);
+  // 边界夹紧，不越墙（走向城墙时跳过）
+  if (!skipClamp) {
+    const fy = LAYOUT.fieldY, fh = LAYOUT.fieldH;
+    if (s.side === 'player') s.y = Math.max(s.y, fy + 4);
+    else s.y = Math.min(s.y, fy + fh - 4);
+  }
 }
 
 /* ——— 战斗 ——— */
@@ -130,11 +132,11 @@ function soldierCombat(s, enemies) {
       return;
     }
 
-    // 走向城墙
+    // 走向城墙（跳过战场边界夹紧）
     const targetY = s.side === 'player'
       ? wallY + wallH
       : wallY;
-    moveToTarget(s, { x: s.x, y: targetY });
+    moveToTarget(s, { x: s.x, y: targetY }, true);
     return;
   }
 
