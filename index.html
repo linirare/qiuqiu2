@@ -13,49 +13,93 @@
   <small>更适合手机 H5 的水果突击布局</small>
 </div>
 
-<div id="wrap">
-  <canvas id="game" aria-label="水果突击游戏画布"></canvas>
-</div>
+<div id="app">
 
-<div id="overlay"></div>
+  <div id="tab-home" class="tab-content active">
+    <div id="menuPanel" class="panel">
+      <div class="panel-inner menu-card">
+        <div class="game-logo">
+          <span class="logo-mark">🍉</span>
+          <div>
+            <h1>水果突击</h1>
+            <p class="sub">5选卡组 · 兵团合流 · 中线对推</p>
+            <p class="sub" style="font-size:10px;color:#2c8d3f;">BUILD <span id="buildBadge">loading</span></p>
+          </div>
+        </div>
 
-<div id="menuPanel" class="panel">
-  <div class="panel-inner menu-card">
-    <div class="game-logo">
-      <span class="logo-mark">🍉</span>
-      <div>
-        <h1>水果突击</h1>
-        <p class="sub">5选卡组 · 兵团合流 · 中线对推</p>
-        <p class="sub" style="font-size:10px;color:#2c8d3f;">BUILD <span id="buildBadge">loading</span></p>
+        <div class="hero-preview" aria-hidden="true">
+          <div class="castle enemy-castle">腐坏果堡</div>
+          <div class="lane-line"></div>
+          <div class="troop-row"><span>🍇</span><span>🍑</span><span>🥝</span><span>🍊</span></div>
+          <div class="castle player-camp">水果营地</div>
+        </div>
+
+        <div class="menu-stats">
+          <span>🍋 <b id="menuGold">0</b></span>
+          <span>🚩 关卡 <b id="menuStage">1</b></span>
+        </div>
+
+        <div class="feature-chips">
+          <span>5个上阵</span>
+          <span>兵团合流</span>
+          <span>克制对推</span>
+        </div>
+
+        <div id="menuDeck" class="feature-chips" style="font-size:22px;gap:8px;"></div>
+        <button id="btnStart" class="btn-primary">开始突击</button>
+        <button id="btnDeck" class="btn-secondary">水果编队 · 5选上阵</button>
+        <button id="btnUpgrade" class="btn-secondary">水果科技树</button>
+        <button id="btnSim" class="btn-secondary small">数值模拟 1-20关</button>
+        <button id="btnReset" class="btn-reset">长按重置数据</button>
       </div>
     </div>
-
-    <div class="hero-preview" aria-hidden="true">
-      <div class="castle enemy-castle">腐坏果堡</div>
-      <div class="lane-line"></div>
-      <div class="troop-row"><span>🍇</span><span>🍑</span><span>🥝</span><span>🍊</span></div>
-      <div class="castle player-camp">水果营地</div>
-    </div>
-
-    <div class="menu-stats">
-      <span>🍋 <b id="menuGold">0</b></span>
-      <span>🚩 关卡 <b id="menuStage">1</b></span>
-    </div>
-
-    <div class="feature-chips">
-      <span>5个上阵</span>
-      <span>兵团合流</span>
-      <span>克制对推</span>
-    </div>
-
-    <div id="menuDeck" class="feature-chips" style="font-size:22px;gap:8px;"></div>
-    <button id="btnStart" class="btn-primary">开始突击</button>
-    <button id="btnDeck" class="btn-secondary">水果编队 · 5选上阵</button>
-    <button id="btnUpgrade" class="btn-secondary">水果科技树</button>
-    <button id="btnSim" class="btn-secondary small">数值模拟 1-20关</button>
-    <button id="btnReset" class="btn-reset">长按重置数据</button>
   </div>
-</div>
+
+  <div id="tab-stages" class="tab-content">
+    <div id="stageSelectArea"></div>
+    <div id="wrap">
+      <canvas id="game" aria-label="水果突击游戏画布"></canvas>
+    </div>
+  </div>
+
+  <div id="tab-characters" class="tab-content">
+    <div class="tab-placeholder">即将开放</div>
+  </div>
+
+  <div id="tab-shop" class="tab-content">
+    <div class="tab-placeholder">即将开放</div>
+  </div>
+
+  <div id="tab-leaderboard" class="tab-content">
+    <div class="tab-placeholder">即将开放</div>
+  </div>
+
+  <nav id="bottomNav">
+    <button class="nav-tab active" data-tab="home">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">首页</span>
+    </button>
+    <button class="nav-tab" data-tab="stages">
+      <span class="nav-icon">🚩</span>
+      <span class="nav-label">关卡</span>
+    </button>
+    <button class="nav-tab" data-tab="characters">
+      <span class="nav-icon">🌟</span>
+      <span class="nav-label">角色</span>
+    </button>
+    <button class="nav-tab" data-tab="shop">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">商店</span>
+    </button>
+    <button class="nav-tab" data-tab="leaderboard">
+      <span class="nav-icon">🏆</span>
+      <span class="nav-label">排行</span>
+    </button>
+  </nav>
+
+</div><!-- /#app -->
+
+<div id="overlay"></div>
 
 <div id="overflowPopup" class="panel hide">
   <div class="panel-inner">
@@ -79,7 +123,7 @@
   <div class="panel-inner wide sim-panel">
     <h2>📊 数值模拟</h2>
     <p class="sub">快速估算 1-20 关胜率、时长和压力点</p>
-    <div id="simResult" class="sim-result">点击菜单中的“数值模拟”开始。</div>
+    <div id="simResult" class="sim-result">点击菜单中的"数值模拟"开始。</div>
     <button id="btnSimClose" class="btn-secondary">关闭</button>
   </div>
 </div>

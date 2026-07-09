@@ -159,3 +159,100 @@ body::before {
 #rotate-hint small { color: #6f9251; font-size: 12px; }
 .phone-rotate { font-size: 50px; animation: rotateHint 1.5s infinite alternate ease-in-out; }
 @keyframes rotateHint { from { transform: rotate(-90deg); } to { transform: rotate(0deg); } }
+
+/* ===== Bottom Navigation ===== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.tab-content {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+}
+
+#tab-stages {
+  padding: 0;
+  overflow: hidden;
+}
+
+#bottomNav {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255,251,235,0.97), rgba(240,255,210,0.98));
+  border-top: 1px solid rgba(120,180,80,0.18);
+  padding: 6px 4px max(6px, env(safe-area-inset-bottom));
+  z-index: 20;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 12px;
+  min-width: 56px;
+  transition: transform 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-tab:active {
+  transform: scale(0.92);
+}
+
+.nav-tab .nav-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.nav-tab .nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8a9e6f;
+  transition: color 0.2s;
+}
+
+.nav-tab.active {
+  background: rgba(255,201,60,0.18);
+}
+
+.nav-tab.active .nav-label {
+  color: #3d8a1e;
+}
+
+.nav-tab.active .nav-icon {
+  transform: translateY(-2px);
+}
+
+/* ===== Tab Placeholder ===== */
+.tab-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 16px;
+  color: #8a9e6f;
+  font-weight: 600;
+}

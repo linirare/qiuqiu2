@@ -2,6 +2,54 @@
    水果突击 · Fruit Assault —— DOM 界面管理
    ============================================================ */
 
+/* ===== 底部导航 Tab 切换 ===== */
+function switchTab(name) {
+  // Don't switch tabs during battle
+  if (state.phase === 'playing' && name !== 'stages') return;
+
+  // Hide all tab content
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  // Show target tab
+  const target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+
+  // Update nav active state
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === name);
+  });
+
+  // Special handling per tab
+  if (name === 'home') {
+    refreshHomeStats();
+  } else if (name === 'stages') {
+    if (state.phase !== 'playing') renderStageSelect();
+  }
+}
+
+function showBottomNav() {
+  const nav = document.getElementById('bottomNav');
+  if (nav) nav.style.display = 'flex';
+}
+
+function hideBottomNav() {
+  const nav = document.getElementById('bottomNav');
+  if (nav) nav.style.display = 'none';
+}
+
+/* Placeholder render functions (filled in later phases) */
+function refreshHomeStats() {
+  const goldEl = document.getElementById('menuGold');
+  const stageEl = document.getElementById('menuStage');
+  if (goldEl) goldEl.textContent = meta.gold || 0;
+  if (stageEl) stageEl.textContent = meta.highestLevel || 1;
+}
+
+function renderStageSelect() {
+  const container = document.getElementById('stageSelectArea');
+  if (!container) return;
+  container.innerHTML = '<div style="padding:20px;text-align:center;color:#7fa05a;">关卡选择 · 开发中</div>';
+}
+
 /* ——— 科技项配置：按 12 个水果球动态生成 ——— */
 function buildUpgradeGroups() {
   const groups = UNIT_POOL.map(id => {
@@ -215,4 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
   resetBtn.addEventListener('mouseleave', resetCancel);
   resetBtn.addEventListener('touchstart', resetStart, { passive: false });
   resetBtn.addEventListener('touchend', resetCancel);
+
+  /* ===== 初始化底部导航 ===== */
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
+
+  // Default to home tab
+  switchTab('home');
 });
