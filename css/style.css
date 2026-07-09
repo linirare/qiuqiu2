@@ -501,3 +501,52 @@ body::before {
   border-color: rgba(83,201,106,0.4);
   color: #2c8d3f;
 }
+
+/* ===== Shop Tab ===== */
+.shop-header {
+  padding: 16px 16px 8px;
+  text-align: center;
+}
+.shop-header h2 { color: #2c8d3f; font-size: 20px; }
+.shop-header .sub { color: #7fa05a; font-size: 12px; }
+.shop-header .sub b { color: #ff9f37; }
+
+.shop-list {
+  padding: 8px 16px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(120,180,80,0.15);
+  border-radius: 16px;
+}
+.shop-item .shop-icon {
+  font-size: 32px;
+  width: 48px; text-align: center;
+}
+.shop-item .shop-info { flex: 1; }
+.shop-item .shop-name { font-size: 14px; font-weight: 700; color: #315326; }
+.shop-item .shop-effect { font-size: 11px; color: #7fa05a; margin-top: 2px; }
+.shop-item .shop-price {
+  padding: 8px 14px;
+  border-radius: 14px;
+  border: none;
+  font-size: 13px; font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(180deg, #78df61, #2eb45a);
+  color: #fff;
+  white-space: nowrap;
+}
+.shop-item .shop-price:active { transform: scale(0.95); }
+.shop-item .shop-price.maxed {
+  background: #ccc; color: #888; cursor: default;
+}
+.shop-item .shop-price.cant-afford {
+  background: #eee; color: #aaa; cursor: not-allowed;
+}

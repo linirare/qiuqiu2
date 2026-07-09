@@ -26,6 +26,8 @@ function switchTab(name) {
   } else if (name === 'characters') {
     renderDeckBar();
     renderCharGrid();
+  } else if (name === 'shop') {
+    renderShop();
   }
 }
 
@@ -501,4 +503,82 @@ function toggleDeckCard(typeId) {
   renderDeckBar();
   renderCharGrid();
   showCharDetail(typeId); // Refresh detail
+}
+
+/* ===== Shop Tab ===== */
+
+function renderShop() {
+  const goldEl = document.getElementById('shopGold');
+  if (goldEl) goldEl.textContent = meta.gold || 0;
+
+  const container = document.getElementById('shopItems');
+  if (!container) return;
+
+  const wallLv = meta.wallLv || 0;
+  const spLv = meta.spLv || 0;
+  const wallCost = 20 + wallLv * 5;
+  const spMaxCost = 15 + spLv * 3;
+  const spStartCost = 10 + spLv * 2;
+
+  const items = [
+    {
+      icon: '🏰', name: '城墙加固', effect: '城墙HP +' + WALL_PER_LV + '（当前 +' + getWallBonus(meta) + '）',
+      lv: wallLv, max: WALL_UPGRADE_MAX, cost: wallCost
+    },
+    {
+      icon: '⚡', name: '果汁扩容', effect: 'SP上限 +1（当前 ' + getSpMax(meta) + '）',
+      lv: spLv, max: SP_UPGRADE_MAX, cost: spMaxCost
+    },
+    {
+      icon: '🔋', name: '果汁号角', effect: '开局SP +1（当前 ' + getSpStart(meta) + '）',
+      lv: spLv, max: SP_UPGRADE_MAX, cost: spStartCost
+    }
+  ];
+
+  let html = '';
+  for (const item of items) {
+    const maxed = item.lv >= item.max;
+    const canAfford = meta.gold >= item.cost;
+    let btnCls = maxed ? 'maxed' : (canAfford ? '' : 'cant-afford');
+    let btnText = maxed ? '已满级' : ('🍋 ' + item.cost);
+
+    html += '<div class="shop-item">' +
+      '<div class="shop-icon">' + item.icon + '</div>' +
+      '<div class="shop-info">' +
+        '<div class="shop-name">' + item.name + ' <small>Lv.' + item.lv + '/' + item.max + '</small></div>' +
+        '<div class="shop-effect">' + item.effect + '</div>' +
+      '</div>' +
+      '<button class="shop-price ' + btnCls + '" data-action="' + item.icon + '" ' + (maxed || !canAfford ? 'disabled' : '') + '>' + btnText + '</button>' +
+    '</div>';
+  }
+  container.innerHTML = html;
+
+  // Bind buy buttons
+  container.querySelectorAll('.shop-price:not([disabled])').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const action = this.dataset.action;
+      handleShopBuy(action);
+    });
+  });
+}
+
+function handleShopBuy(action) {
+  if (action === '🏰') {
+    const lv = meta.wallLv || 0;
+    if (lv >= WALL_UPGRADE_MAX) return;
+    const cost = 20 + lv * 5;
+    if (meta.gold < cost) return;
+    meta.gold -= cost;
+    meta.wallLv = lv + 1;
+  } else if (action === '⚡' || action === '🔋') {
+    const lv = meta.spLv || 0;
+    if (lv >= SP_UPGRADE_MAX) return;
+    const cost = action === '⚡' ? (15 + lv * 3) : (10 + lv * 2);
+    if (meta.gold < cost) return;
+    meta.gold -= cost;
+    meta.spLv = lv + 1;
+  }
+  saveMeta();
+  refreshHomeStats();
+  renderShop();
 }
