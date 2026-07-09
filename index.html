@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>水果突击 · Fruit Assault</title>
-<link rel="stylesheet" href="css/style.css?v=20260709h">
+<link rel="stylesheet" href="css/style.css?v=20260709i">
 </head>
 <body>
 <div id="rotate-hint">
@@ -25,7 +25,7 @@
       <span class="logo-mark">🍉</span>
       <div>
         <h1>水果突击</h1>
-        <p class="sub">五路果园 · 果汁能量出兵 · 推倒果堡</p>
+        <p class="sub">5选卡组 · 水果球合成 · 推倒腐坏果堡</p>
       </div>
     </div>
 
@@ -42,12 +42,14 @@
     </div>
 
     <div class="feature-chips">
-      <span>清新果园</span>
-      <span>水果克制</span>
-      <span>合成进化</span>
+      <span>5个上阵</span>
+      <span>12水果球</span>
+      <span>合成引擎</span>
     </div>
 
+    <div id="menuDeck" class="feature-chips" style="font-size:22px;gap:8px;"></div>
     <button id="btnStart" class="btn-primary">开始突击</button>
+    <button id="btnDeck" class="btn-secondary">水果编队 · 5选上阵</button>
     <button id="btnUpgrade" class="btn-secondary">水果科技树</button>
     <button id="btnSim" class="btn-secondary small">数值模拟 1-20关</button>
     <button id="btnReset" class="btn-reset">长按重置数据</button>
@@ -96,41 +98,44 @@
     <h2>📖 果园战术</h2>
     <div class="help-section">
       <h3>🎯 目标</h3>
-      <p>把同品类、同等级的水果营拖到一起升级，持续产出水果士兵，压过中线并推倒敌方果堡。</p>
+      <p>局外从12个水果球里选5个上阵；局内只会随机刷这5种。通过合成养核心、控随机、推倒敌方果堡。</p>
     </div>
     <div class="help-section">
       <h3>🖐️ 操作</h3>
       <p><b>拖拽水果营</b>到同类同级营地上 → 合成；拖到空格 → 移动；拖到不同营地 → 交换。</p>
-      <p><b>双击水果营</b>消耗 1 点果汁能量立即出兵，适合救线或补刀破城。</p>
+      <p><b>奇异果万能</b>可当任意同星材料；<b>百香果复制</b>拖到同星目标上会复制成目标水果。</p>
     </div>
     <div class="help-section">
-      <h3>🍓 克制与站位</h3>
-      <p><span class="red">葡萄克菠萝</span> · <span class="green">菠萝克香蕉</span> · <span class="blue">香蕉克西瓜</span> · <span class="gold">西瓜克葡萄</span>。葡萄保持后排，西瓜/菠萝更适合抗线。</p>
+      <h3>🍓 卡组思路</h3>
+      <p>建议 1前排 + 1输出 + 1攻城 + 1控制/辅助 + 1合成引擎。比如西瓜+葡萄+橙子+蜜桃+奇异果。</p>
     </div>
     <div class="help-section">
-      <h3>🏰 攻城</h3>
-      <p>每一路最多 3 个水果士兵同时打果堡，后续士兵会排队，避免一波兵瞬间秒墙。</p>
+      <h3>🏰 机制</h3>
+      <p>蜜桃治疗、冰梨减速、橙子专拆墙、南瓜死亡滚动、椰子护盾、西瓜周期瓜皮盾。高等级合成会显著强化机制。</p>
     </div>
     <button id="btnHelpClose" class="btn-secondary">知道了</button>
   </div>
 </div>
 
-<script src="js/config.js?v=20260709h"></script>
-<script src="js/state.js?v=20260709h"></script>
-<script src="js/board.js?v=20260709h"></script>
-<script src="js/combat.js?v=20260709h"></script>
-<script src="js/ai.js?v=20260709h"></script>
-<script src="js/render.js?v=20260709h"></script>
-<script src="js/skin.js?v=20260709h"></script>
-<script src="js/battle_skin.js?v=20260709h"></script>
-<script src="js/hud_skin.js?v=20260709h"></script>
-<script src="js/fruit_skin.js?v=20260709h"></script>
-<script src="js/balance_sim.js?v=20260709h"></script>
-<script src="js/input.js?v=20260709h"></script>
-<script src="js/audio.js?v=20260709h"></script>
-<script src="js/ui.js?v=20260709h"></script>
-<script src="js/main.js?v=20260709h"></script>
-<script src="js/gameplay_assist.js?v=20260709h"></script>
-<script src="js/juice.js?v=20260709h"></script>
+<script src="js/config.js?v=20260709i"></script>
+<script src="js/state.js?v=20260709i"></script>
+<script src="js/board.js?v=20260709i"></script>
+<script src="js/combat.js?v=20260709i"></script>
+<script src="js/ai.js?v=20260709i"></script>
+<script src="js/render.js?v=20260709i"></script>
+<script src="js/skin.js?v=20260709i"></script>
+<script src="js/battle_skin.js?v=20260709i"></script>
+<script src="js/hud_skin.js?v=20260709i"></script>
+<script src="js/fruit_skin.js?v=20260709i"></script>
+<script src="js/balance_sim.js?v=20260709i"></script>
+<script src="js/input.js?v=20260709i"></script>
+<script src="js/audio.js?v=20260709i"></script>
+<script src="js/ui.js?v=20260709i"></script>
+<script src="js/main.js?v=20260709i"></script>
+<script src="js/fruit_deck_runtime.js?v=20260709i"></script>
+<script src="js/gameplay_assist.js?v=20260709i"></script>
+<script src="js/fruit_mechanics.js?v=20260709i"></script>
+<script src="js/juice.js?v=20260709i"></script>
+<script src="js/deck_ui.js?v=20260709i"></script>
 </body>
 </html>
