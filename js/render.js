@@ -45,6 +45,19 @@ function drawBoard(slots, isEnemy, dragHint = null) {
       roundRect(x + 2, y + 2, CELL - 4, CELL - 4, 8);
       ctx.fill();
 
+      // Empty slot glow hint (player board only, during battle)
+      if (!isEnemy && !ball && state.phase === 'playing' && state.sp > 0) {
+        ctx.fillStyle = 'rgba(255,228,90,0.06)';
+        roundRect(x + 2, y + 2, CELL - 4, CELL - 4, 8);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,228,90,0.18)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 4]);
+        roundRect(x + 2, y + 2, CELL - 4, CELL - 4, 8);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
       // 可合成高亮框
       if (isMergeHint) {
         ctx.strokeStyle = '#ffe45a';
