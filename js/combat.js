@@ -1,6 +1,7 @@
 /* ============================================================
    合成攻城 · Merge Siege —— 战斗系统
    设计目标：战线推进，而不是自由追怪。
+   关键规则：未走出己方城墙的兵处于保护区，不可索敌/不可被攻击。
    ============================================================ */
 
 const SOLDIER_SPEED = 92;
@@ -40,7 +41,7 @@ function nearestLaneIndex(x) {
 function ensureLane(s) {
   if (s.laneIndex === undefined || s.laneIndex === null) s.laneIndex = nearestLaneIndex(s.x || W / 2);
   if (!s.laneX) s.laneX = laneXByIndex(s.laneIndex) + (Math.random() - 0.5) * 12;
-  if (!s.mode) s.mode = 'march';
+  if (!s.mode) s.mode = 'deploy';
 }
 
 function steerToLane(s, ratio = 0.65) {
@@ -51,44 +52,64 @@ function steerToLane(s, ratio = 0.65) {
   s.x = clamp(s.x, 24, W - 24);
 }
 
-function isInsideOwnCastle(s) {
-  if (s.side === 'player') return s.y > fieldBottom();
-  return s.y < fieldTop();
+function ownGateY(s) {
+  return s.side === 'player'
+    ? LAYOUT.playerWallY - 2
+    : LAYOUT.enemyWallY + LAYOUT.wallH + 2;
 }
 
-function isEngageable(s) {
-  return !!s && s.alive && !isInsideOwnCastle(s) && s.mode !== 'dead';
+function hasLeftOwnCastle(s) {
+  const gateY = ownGateY(s);
+  return s.side === 'player' ? s.y <= gateY : s.y >= gateY;
 }
 
-function enterField(s) {
+function markBattleReadyIfNeeded(s) {
+  if (s.battleReady) return true;
+  if (!hasLeftOwnCastle(s)) return false;
+  s.battleReady = true;
+  s.protected = false;
+  s.mode = 'march';
+  s.target = null;
+  if (!s._gateFx) {
+    s._gateFx = true;
+    state.rings.push({ x: s.x, y: s.y, r: 4, life: 0.18, maxLife: 0.18, color: s.side === 'player' ? THEME.safe : THEME.accent });
+  }
+  return true;
+}
+
+function isCombatant(s) {
+  return !!(s && s.alive && s.battleReady && !s.protected && s.mode !== 'dead');
+}
+
+function moveOutOfCastle(s) {
   ensureLane(s);
   steerToLane(s, 0.8);
+  s.mode = 'deploy';
 
-  if (s.side === 'player' && s.y > fieldBottom()) {
-    s.mode = 'deploy';
-    s.invulnerable = true;
-    s.y -= SOLDIER_SPEED * dt_global;
-    if (s.y <= fieldBottom()) {
-      s.y = fieldBottom();
-      s.mode = 'march';
-      s.invulnerable = false;
+  const gateY = ownGateY(s);
+  if (s.side === 'player') {
+    if (s.y > gateY) {
+      s.y -= SOLDIER_SPEED * dt_global;
+      if (s.y <= gateY) s.y = gateY;
+      markBattleReadyIfNeeded(s);
+      return true;
     }
-    return true;
-  }
-  if (s.side === 'enemy' && s.y < fieldTop()) {
-    s.mode = 'deploy';
-    s.invulnerable = true;
-    s.y += SOLDIER_SPEED * dt_global;
-    if (s.y >= fieldTop()) {
-      s.y = fieldTop();
-      s.mode = 'march';
-      s.invulnerable = false;
+  } else {
+    if (s.y < gateY) {
+      s.y += SOLDIER_SPEED * dt_global;
+      if (s.y >= gateY) s.y = gateY;
+      markBattleReadyIfNeeded(s);
+      return true;
     }
-    return true;
   }
 
-  s.invulnerable = false;
+  markBattleReadyIfNeeded(s);
   return false;
+}
+
+function keepInsideBattlefield(s) {
+  s.x = clamp(s.x, 24, W - 24);
+  if (s.mode !== 'siege') s.y = clamp(s.y, fieldTop(), fieldBottom());
 }
 
 function isForwardOf(s, e) {
@@ -96,13 +117,14 @@ function isForwardOf(s, e) {
 }
 
 function findTarget(s, enemies) {
+  if (!isCombatant(s)) return null;
   ensureLane(s);
   const counterType = COUNTER[s.type];
   let best = null;
   let bestScore = Infinity;
 
   for (const e of enemies) {
-    if (!isEngageable(e)) continue;
+    if (!isCombatant(e)) continue;
     ensureLane(e);
     const dx = e.x - s.x;
     const dy = e.y - s.y;
@@ -139,9 +161,7 @@ function moveTowardEnemy(s, target) {
 
   if (Math.abs(dx) > 3) s.x += Math.sign(dx) * Math.min(Math.abs(dx), xStep);
   if (Math.abs(dy) > 3) s.y += Math.sign(dy) * Math.min(Math.abs(dy), yStep);
-
-  s.x = clamp(s.x, 24, W - 24);
-  s.y = clamp(s.y, fieldTop(), fieldBottom());
+  keepInsideBattlefield(s);
 }
 
 function advanceTowardWall(s) {
@@ -165,6 +185,7 @@ function reachedWall(s) {
 }
 
 function attackWall(s) {
+  if (!isCombatant(s)) return;
   s.mode = 'siege';
   const wall = wallDataFor(s);
   s.y = wall.attackY;
@@ -213,11 +234,7 @@ function killSoldier(target, killerSide, killerAtk, killerType) {
 }
 
 function attackTarget(s, target) {
-  if (!isEngageable(target)) {
-    s.target = null;
-    return;
-  }
-
+  if (!isCombatant(s) || !isCombatant(target)) return;
   const dx = s.x - target.x;
   const dy = s.y - target.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
@@ -268,7 +285,10 @@ function updateSoldier(s, enemies) {
   if (!s.alive) return;
   ensureLane(s);
 
-  if (enterField(s)) return;
+  if (!isCombatant(s)) {
+    moveOutOfCastle(s);
+    return;
+  }
 
   const target = findTarget(s, enemies);
   if (target) {
@@ -284,13 +304,13 @@ function applySeparation(soldiers) {
   const sepDist = 16;
   for (let i = 0; i < soldiers.length; i++) {
     const a = soldiers[i];
-    if (!a.alive) continue;
+    if (!isCombatant(a)) continue;
     let fx = 0;
     let fy = 0;
     for (let j = 0; j < soldiers.length; j++) {
       if (i === j) continue;
       const b = soldiers[j];
-      if (!b.alive) continue;
+      if (!isCombatant(b)) continue;
       const dx = a.x - b.x;
       const dy = a.y - b.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -303,7 +323,7 @@ function applySeparation(soldiers) {
     if (fx || fy) {
       const speed = 42 * dt_global;
       a.x = clamp(a.x + fx * speed, 24, W - 24);
-      if (a.mode !== 'siege' && !isInsideOwnCastle(a)) a.y = clamp(a.y + fy * speed, fieldTop(), fieldBottom());
+      if (a.mode !== 'siege') a.y = clamp(a.y + fy * speed, fieldTop(), fieldBottom());
     }
   }
 }
@@ -315,16 +335,9 @@ function updateProjectiles() {
     if (p.life <= 0) { state.projectiles.splice(i, 1); continue; }
 
     const enemies = p.side === 'player' ? state.enemySoldiers : state.playerSoldiers;
-    const tgt = enemies.find(e => e.id === p.targetId && isEngageable(e));
+    const tgt = enemies.find(e => e.id === p.targetId && isCombatant(e));
     if (!tgt) {
-      const dx = p.targetX - p.x;
-      const dy = p.targetY - p.y;
-      const d = Math.sqrt(dx * dx + dy * dy);
-      if (d < 5) { state.projectiles.splice(i, 1); continue; }
-      if (d > 0.1) {
-        p.x += (dx / d) * p.speed * dt_global;
-        p.y += (dy / d) * p.speed * dt_global;
-      }
+      state.projectiles.splice(i, 1);
       continue;
     }
 
