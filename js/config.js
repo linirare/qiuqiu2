@@ -29,14 +29,14 @@ const BOARD_X = (W - BOARD_W) / 2;
 /* ——— Y 坐标布局 ——— */
 const LAYOUT = {
   enemyInfoY:  6,
-  enemyBoardY: 24,
-  enemyWallY:  24 + BOARD_H + 10,
+  enemyBoardY: 44,
+  enemyWallY:  44 + BOARD_H + 10,
   wallH: 22,
-  fieldY:      24 + BOARD_H + 10 + 22 + 8,
-  fieldH: 222,
-  playerWallY: 24 + BOARD_H + 10 + 22 + 8 + 222 + 8,
-  playerBoardY:24 + BOARD_H + 10 + 22 + 8 + 222 + 8 + 22 + 10,
-  bottomY:     24 + BOARD_H + 10 + 22 + 8 + 222 + 8 + 22 + 10 + BOARD_H + 4,
+  fieldY:      44 + BOARD_H + 10 + 22 + 8,
+  fieldH: 258,
+  playerWallY: 44 + BOARD_H + 10 + 22 + 8 + 258 + 8,
+  playerBoardY:44 + BOARD_H + 10 + 22 + 8 + 258 + 8 + 22 + 10,
+  bottomY:     44 + BOARD_H + 10 + 22 + 8 + 258 + 8 + 22 + 10 + BOARD_H + 4,
 };
 
 /* ——— 12 个水果球：像球球英雄一样，单位是“卡组组件”而不是纯兵种 ——— */

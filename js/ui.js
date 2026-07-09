@@ -4,8 +4,15 @@
 
 /* ===== 底部导航 Tab 切换 ===== */
 function switchTab(name) {
-  // Don't switch tabs during battle
-  if (state.phase === 'playing' && name !== 'stages') return;
+  // Don't switch tabs during active battle (guard: playing + canvas visible)
+  const canvasWrap = document.getElementById('wrap');
+  const inBattle = state.phase === 'playing' && canvasWrap && canvasWrap.style.display !== 'none';
+  if (inBattle && name !== 'stages') return;
+
+  // Safety: reset phase if we're not actually in battle
+  if (state.phase === 'playing' && canvasWrap && canvasWrap.style.display === 'none') {
+    state.phase = 'menu';
+  }
 
   // Hide all tab content
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -511,8 +518,11 @@ function toggleDeckCard(typeId) {
 /* ===== Shop Tab ===== */
 
 function renderShop() {
-  const goldEl = document.getElementById('shopGold');
+  // Update gold display
+  var goldEl = document.getElementById('shopGold');
   if (goldEl) goldEl.textContent = meta.gold || 0;
+  // Also refresh home stats
+  refreshHomeStats();
 
   const container = document.getElementById('shopItems');
   if (!container) return;
