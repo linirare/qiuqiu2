@@ -52,16 +52,20 @@ function onDown(ev) {
   if (!ball) { lastTap.time = 0; return; }
 
   const now = performance.now();
-  if (lastTap.r === r && lastTap.c === c && (now - lastTap.time) < 350 && state.sp > 0) {
+  if (lastTap.r === r && lastTap.c === c && (now - lastTap.time) < 350) {
     const alive = state.playerSoldiers.filter(s => s.alive).length;
-    if (alive < MAX_SOLDIERS) {
+    const center = slotCenter(r, c, false);
+    if (state.sp <= 0) {
+      addFx(center.x, center.y - 24, '士气不足', THEME.accent, 13);
+    } else if (alive >= MAX_SOLDIERS) {
+      addFx(center.x, center.y - 24, '兵数已满', THEME.accent, 13);
+    } else {
       state.sp -= 1;
       const soldier = spawnSoldierFromBall(ball, r, c, 'player', true);
       const cd = SPAWN_COOLDOWNS[ball.level] || SPAWN_COOLDOWNS[1];
       ball.spawnTimer = cd;
-      const center = slotCenter(r, c, false);
       state.rings.push({ x: center.x, y: center.y, r: 7, life: 0.34, maxLife: 0.34, color: THEME.gold });
-      addFx(center.x, center.y - 24, soldier ? '立即出兵!' : '兵数已满', soldier ? THEME.gold : THEME.accent, 13);
+      addFx(center.x, center.y - 24, soldier ? '士气 -1 · 立即出兵!' : '兵数已满', soldier ? THEME.gold : THEME.accent, 13);
     }
     lastTap.time = 0;
     return;
@@ -78,7 +82,14 @@ function onDown(ev) {
     sy: p.y,
     moved: false,
     nearestSnap: null,
+    snapAction: '',
   };
+}
+
+function snapActionFor(targetBall, dragUnit) {
+  if (!targetBall) return 'move';
+  if (targetBall.type === dragUnit.type && targetBall.level === dragUnit.level && targetBall.level < MAX_LEVEL) return 'merge';
+  return 'swap';
 }
 
 function onMove(ev) {
@@ -91,18 +102,19 @@ function onMove(ev) {
   const dy = p.y - state.drag.sy;
   if (dx * dx + dy * dy > 12 * 12) state.drag.moved = true;
 
-  let bestDist = 16;
+  let bestDist = 24;
   state.drag.nearestSnap = null;
+  state.drag.snapAction = '';
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
+      if (r === state.drag.fromR && c === state.drag.fromC) continue;
       const rc = slotCenter(r, c, false);
       const dist = Math.sqrt((p.x - rc.x) ** 2 + (p.y - rc.y) ** 2);
       if (dist < bestDist) {
         const tb = state.playerSlots[r][c];
-        if (!tb || (tb.type === state.drag.unit.type && tb.level === state.drag.unit.level && tb.level < MAX_LEVEL)) {
-          bestDist = dist;
-          state.drag.nearestSnap = { r, c };
-        }
+        bestDist = dist;
+        state.drag.nearestSnap = { r, c };
+        state.drag.snapAction = snapActionFor(tb, state.drag.unit);
       }
     }
   }
@@ -144,6 +156,7 @@ function onUp(ev) {
     if (moved) {
       const center = slotCenter(toR, toC, false);
       state.rings.push({ x: center.x, y: center.y, r: 6, life: 0.22, maxLife: 0.22, color: 'rgba(255,255,255,0.55)' });
+      addFx(center.x, center.y - 22, '移动', THEME.safe, 11);
     }
   } else {
     const result = tryMerge(state.playerSlots, d.fromR, d.fromC, toR, toC);
@@ -166,6 +179,10 @@ function onUp(ev) {
       }
       state.shake = Math.min(0.35 + result.newLevel * 0.13, 1.7);
       drainOverflow(state.playerSlots, state.overflowQueue);
+    } else if (result && result.swap) {
+      const center = slotCenter(toR, toC, false);
+      state.rings.push({ x: center.x, y: center.y, r: 6, life: 0.22, maxLife: 0.22, color: THEME.info });
+      addFx(center.x, center.y - 22, '交换', THEME.info, 11);
     }
   }
 }
