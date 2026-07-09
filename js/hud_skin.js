@@ -1,5 +1,5 @@
 /* ============================================================
-   合成攻城 · HUD 表现补丁
+   水果突击 · HUD 表现补丁
    ============================================================ */
 
 function drawHUD() {
@@ -11,16 +11,16 @@ function drawHUD() {
   const spMax = typeof getSpMax === 'function' ? getSpMax(meta) : SP_MAX;
   const recoverCap = typeof getSpRecoverCap === 'function' ? getSpRecoverCap(meta) : 6;
 
-  drawPanel(10, LAYOUT.fieldY + LAYOUT.fieldH - 38, 126, 30, 10, 'rgba(0,0,0,0.34)', null);
+  drawPanel(10, LAYOUT.fieldY + LAYOUT.fieldH - 38, 142, 30, 10, 'rgba(255,255,255,0.58)', null);
   ctx.font = 'bold 12px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillStyle = state.sp > 0 ? THEME.gold : '#695438';
-  ctx.fillText(`士气 ⚡ ${state.sp}/${spMax}`, 20, LAYOUT.fieldY + LAYOUT.fieldH - 20);
+  ctx.fillStyle = state.sp > 0 ? THEME.gold : '#c77a40';
+  ctx.fillText(`果汁能量 🍹 ${state.sp}/${spMax}`, 18, LAYOUT.fieldY + LAYOUT.fieldH - 20);
   ctx.font = '9px sans-serif';
   ctx.fillStyle = THEME.textDim;
-  ctx.fillText(`自动回复至 ${recoverCap}`, 20, LAYOUT.fieldY + LAYOUT.fieldH - 10);
+  ctx.fillText(`自动回复至 ${recoverCap}`, 18, LAYOUT.fieldY + LAYOUT.fieldH - 10);
 
-  drawPanel(W - 112, LAYOUT.fieldY + LAYOUT.fieldH - 34, 102, 26, 10, 'rgba(0,0,0,0.30)', null);
+  drawPanel(W - 112, LAYOUT.fieldY + LAYOUT.fieldH - 34, 102, 26, 10, 'rgba(255,255,255,0.52)', null);
   ctx.font = 'bold 12px sans-serif';
   ctx.textAlign = 'right';
   ctx.fillStyle = THEME.textDim;
@@ -28,7 +28,7 @@ function drawHUD() {
 
   const barW = 116, barH = 8;
   const bx = W / 2 - barW / 2, by = LAYOUT.fieldY + LAYOUT.fieldH - 28;
-  ctx.fillStyle = 'rgba(0,0,0,0.42)';
+  ctx.fillStyle = 'rgba(122,178,73,0.24)';
   roundRect(bx, by, barW, barH, 4);
   ctx.fill();
   ctx.fillStyle = THEME.safe;
