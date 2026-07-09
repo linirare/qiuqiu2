@@ -141,6 +141,7 @@ function initLevel(k) {
   state.enemySpawnTimer = 0;
   state.enemyOverflow = 0;
   state.fx = [];
+  state.attackFx = [];
   state.time = 0;
   state.drag = null;
   state.shake = 0;

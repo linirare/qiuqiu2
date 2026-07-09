@@ -65,6 +65,7 @@ function createState() {
 
     // 特效
     fx: [], // [{x, y, text, color, life, maxLife, size}]
+    attackFx: [], // [{x1, y1, x2, y2, life, maxLife}] 攻击划痕
     // 环特效
     rings: [], // [{x, y, r, life, maxLife, color}]
 

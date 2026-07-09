@@ -108,6 +108,12 @@ function update(dt) {
     state.fx[i].life -= dt;
     if (state.fx[i].life <= 0) state.fx.splice(i, 1);
   }
+
+  // 攻击划痕衰减
+  for (let i = state.attackFx.length - 1; i >= 0; i--) {
+    state.attackFx[i].life -= dt;
+    if (state.attackFx[i].life <= 0) state.attackFx.splice(i, 1);
+  }
 }
 
 /* ——— 产兵（暂为 Phase 3 占位，先做简单行走） ——— */

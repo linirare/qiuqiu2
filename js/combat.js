@@ -143,8 +143,19 @@ function soldierCombat(s, enemies) {
       target.hp -= dmg;
       s.atkTimer = s.speed;
 
-      // 受击闪红
-      target.hitFlash = 0.15;
+      // 攻击划痕
+      state.attackFx.push({
+        x1: s.x, y1: s.y, x2: target.x, y2: target.y,
+        life: 0.25, maxLife: 0.25,
+      });
+
+      // 伤害数字
+      const midX = (s.x + target.x) / 2;
+      const midY = (s.y + target.y) / 2 - 8;
+      addFx(midX, midY, `-${dmg}`, '#ff4a3a', 13);
+
+      // 受击闪红（延长到0.3s更明显）
+      target.hitFlash = 0.3;
 
       // 死亡
       if (target.hp <= 0) {

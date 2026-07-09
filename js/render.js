@@ -70,44 +70,62 @@ function drawBoard(slots, isEnemy, dragHint = null) {
 function drawBall(ball, cx, cy, radius, extraY = 0) {
   const t = TYPES[ball.type];
   const bounceOff = ball.bounce ? -Math.sin(ball.bounce * Math.PI) * 12 : 0;
-  const r = radius * (1 + (ball.level - 1) * 0.03); // 等级越高略大
+  const lvScale = 1 + (ball.level - 1) * 0.12; // 每级+12%，Lv.7是Lv.1的1.72倍
+  const r = radius * lvScale;
   const drawY = cy - bounceOff + extraY;
+
+  // 等级光环
+  if (ball.level >= 3) {
+    ctx.save();
+    ctx.globalAlpha = 0.2 + ball.level * 0.06;
+    ctx.shadowColor = t.color;
+    ctx.shadowBlur = 6 + ball.level * 4;
+    ctx.strokeStyle = ball.level >= 5 ? '#ffe45a' : t.color;
+    ctx.lineWidth = 1.5 + ball.level * 0.3;
+    ctx.beginPath();
+    ctx.arc(cx, drawY, r + 3 + ball.level, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.restore();
+  }
 
   // 外发光
   ctx.shadowColor = t.color;
   ctx.shadowBlur = 8 + ball.level * 3;
 
   // 圆盘
+  const luma = 0.6 + ball.level * 0.05; // 等级越高越亮
   ctx.fillStyle = t.color;
   ctx.beginPath();
   ctx.arc(cx, drawY, r, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
 
-  // 内圈高光
-  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  // 高等级纹理：内圈光晕
+  ctx.fillStyle = `rgba(255,255,255,${0.15 + ball.level * 0.03})`;
   ctx.beginPath();
-  ctx.arc(cx - r * 0.25, drawY - r * 0.25, r * 0.35, 0, Math.PI * 2);
+  ctx.arc(cx - r * 0.2, drawY - r * 0.2, r * 0.4, 0, Math.PI * 2);
   ctx.fill();
 
-  // 等级数字
-  ctx.font = `bold ${Math.round(r * 0.9)}px sans-serif`;
+  // 等级数字（更大更粗）
+  const fontSize = Math.round(r * (0.8 + ball.level * 0.04));
+  ctx.font = `bold ${fontSize}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+  ctx.lineWidth = 3;
   ctx.strokeText(ball.level, cx, drawY);
-  ctx.fillStyle = '#fff';
+  ctx.fillStyle = ball.level >= 5 ? '#ffe45a' : '#fff';
   ctx.fillText(ball.level, cx, drawY);
 
-  // 品类图标（右下小角标）
-  ctx.font = `${Math.round(r * 0.55)}px sans-serif`;
+  // 品类图标（右下小角标，也按等级缩放）
+  const iconSize = Math.round(r * (0.5 + ball.level * 0.02));
+  ctx.font = `${iconSize}px sans-serif`;
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   const iconR = r * 0.55;
   ctx.beginPath();
   ctx.arc(cx + r * 0.6, drawY + r * 0.6, iconR * 0.65, 0, Math.PI * 2);
   ctx.fill();
-  ctx.font = `${Math.round(r * 0.5)}px sans-serif`;
+  ctx.font = `${iconSize}px sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#fff';
@@ -190,12 +208,15 @@ function drawSoldier(s) {
   ctx.ellipse(s.x, s.y + r + 2, r * 0.7, 4, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 受击闪白
+  // 受击闪红
   if (s.hitFlash > 0) {
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#ff2a1a';
+    ctx.shadowColor = '#ff2a1a';
+    ctx.shadowBlur = 8;
     ctx.beginPath();
-    ctx.arc(s.x, s.y, r, 0, Math.PI * 2);
+    ctx.arc(s.x, s.y, r + 2, 0, Math.PI * 2);
     ctx.fill();
+    ctx.shadowBlur = 0;
   } else {
     // 兵的身体
     ctx.fillStyle = s.side === 'enemy' ? t.color + '99' : t.color;
@@ -240,6 +261,32 @@ function drawRings() {
     ctx.stroke();
   }
   ctx.globalAlpha = 1;
+}
+
+/* ——— 攻击划痕 ——— */
+function drawAttackFx() {
+  for (const a of state.attackFx) {
+    const alpha = a.life / a.maxLife;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#ff4a3a';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(a.x1, a.y1);
+    ctx.lineTo(a.x2, a.y2);
+    ctx.stroke();
+    // 闪光点在中点
+    const mx = (a.x1 + a.x2) / 2, my = (a.y1 + a.y2) / 2;
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = '#ffdd4a';
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    ctx.arc(mx, my, 3 * alpha, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
 }
 
 /* ——— 特效文字 ——— */
@@ -394,6 +441,7 @@ function draw() {
 
   drawOverflowIndicator();
   drawHUD();
+  drawAttackFx();
   drawRings();
   drawSpeedBtn();
   drawHelpBtn();
