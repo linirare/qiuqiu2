@@ -73,7 +73,7 @@ function update(dt) {
 
   if (!state._spTimer) state._spTimer = 0;
   state._spTimer += dt;
-  if (state._spTimer >= SP_PASSIVE && state.sp < 4) {
+  if (state._spTimer >= SP_PASSIVE && state.sp < 6) {
     state._spTimer -= SP_PASSIVE;
     state.sp = Math.min(state.sp + 1, SP_MAX);
     addFx(36, LAYOUT.fieldY + LAYOUT.fieldH - 46, '+1士气', THEME.gold, 11);
@@ -93,10 +93,11 @@ function update(dt) {
     drainOverflow(state.playerSlots, state.overflowQueue);
   }
 
-  // 敌方自动补充兵营
+  // 敌方自动补充兵营：使用关卡配置里的敌方补兵节奏
   state.enemyBallTimer += dt;
-  if (state.enemyBallTimer >= BALL_SPAWN_INTERVAL) {
-    state.enemyBallTimer -= BALL_SPAWN_INTERVAL;
+  const enemyBallInterval = state.levelConfig?.enemySpawnInterval || BALL_SPAWN_INTERVAL;
+  if (state.enemyBallTimer >= enemyBallInterval) {
+    state.enemyBallTimer -= enemyBallInterval;
     const added = autoSpawnBall(state.enemySlots);
     if (!added) state.enemyOverflow++;
     if (state.enemyOverflow > 0) {
