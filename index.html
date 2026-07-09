@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>合成塔防</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="game"></canvas>
+</div>
+<!-- DOM 浮层容器（Phase 5 使用） -->
+<div id="overlay"></div>
+<div id="menuPanel" class="panel">
+  <div class="panel-inner">
+    <h1>⚔️ 合成塔防</h1>
+    <p class="sub">PvE 关卡制 · 合成出兵 · 推倒敌城</p>
+    <button id="btnStart" class="btn-primary">开始游戏</button>
+    <button id="btnUpgrade" class="btn-secondary">永久升级</button>
+  </div>
+</div>
+<div id="overflowPopup" class="panel hide">
+  <div class="panel-inner">
+    <h2>📦 溢出队列</h2>
+    <div id="overflowList" style="width:100%;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:40px;"></div>
+    <button id="btnOverflowClose" class="btn-secondary">关闭</button>
+  </div>
+</div>
+<div id="upgradePanel" class="panel hide">
+  <div class="panel-inner wide">
+    <h2>⚔️ 永久升级</h2>
+    <p class="sub">金币 <span id="upGold">0</span>💰</p>
+    <div id="upgradeList"></div>
+    <button id="btnUpClose" class="btn-secondary">关闭</button>
+  </div>
+</div>
+<div id="resultPanel" class="panel hide">
+  <div class="panel-inner">
+    <h2 id="resultTitle"></h2>
+    <p id="resultDetail"></p>
+    <button id="btnRetry" class="btn-primary">再来一次</button>
+    <button id="btnNext" class="btn-primary hide">下一关</button>
+    <button id="btnMenu" class="btn-secondary">返回菜单</button>
+  </div>
+</div>
+<div id="helpPanel" class="panel hide">
+  <div class="panel-inner help-panel">
+    <h2>📖 玩法说明</h2>
+    <div class="help-section">
+      <h3>🎯 目标</h3>
+      <p>合成更强力的兵种，推倒敌方城墙</p>
+    </div>
+    <div class="help-section">
+      <h3>🖐️ 操作</h3>
+      <p><b>拖拽球</b>到同品类同级球上 → <b>合成升级</b>（等级+1）</p>
+      <p>拖到空格 → 移动；拖到不同球 → 交换位置</p>
+      <p>合成预览：同品同级格子会<b>高亮</b></p>
+    </div>
+    <div class="help-section">
+      <h3>⚔️ 战斗</h3>
+      <p>棋盘上的球自动产兵到中间战场</p>
+      <p>兵优先攻击克制品类（<span style="color:#ff6b4a">弓→枪</span> <span style="color:#6fd44e">枪→刀</span> <span style="color:#4ab0ff">刀→盾</span> <span style="color:#e8c96a">盾→弓</span>）</p>
+      <p>兵清完敌人后会去砍敌方城墙</p>
+    </div>
+    <div class="help-section">
+      <h3>🏆 成长</h3>
+      <p>每关胜利获得金币 → 永久升级品类攻/血</p>
+      <p>右上 ⏩ 按钮可切换 1x/2x/3x 速度</p>
+    </div>
+    <button id="btnHelpClose" class="btn-secondary">知道了</button>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/state.js"></script>
+<script src="js/board.js"></script>
+<script src="js/combat.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/render.js"></script>
+<script src="js/input.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
