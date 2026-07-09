@@ -161,7 +161,7 @@ function soldierCombat(s, enemies) {
           targetX: target.x, targetY: target.y,
           targetId: target.id, dmg,
           speed: 200, color: TYPES[s.type]?.color || '#ff6b4a',
-          life: 1.5,
+          life: 1.5, side: s.side,
         });
       } else {
         // 近战：直接扣血
@@ -178,7 +178,7 @@ function soldierCombat(s, enemies) {
         addFx(midX, midY, `-${dmg}`, THEME.accent, 13);
         if (target.hp <= 0) {
           target.alive = false;
-          state.sp += 1; // 杀敌得SP
+          if (s.side === 'player') state.sp = Math.min(state.sp + 1, SP_MAX); // 只有玩家杀敌得SP
           state.rings.push({ x: target.x, y: target.y, r: 4, life: 0.25, maxLife: 0.25, color: '#ff4a3a' });
           addFx(target.x, target.y - 6, '💀', '#ff6a4a', 12);
         }
@@ -234,7 +234,7 @@ function updateCombat() {
         // 命中
         tgt.hp -= p.dmg;
         tgt.hitFlash = 0.3;
-        if (tgt.hp <= 0) { tgt.alive = false; state.sp += 1; state.rings.push({ x: tgt.x, y: tgt.y, r: 4, life: 0.25, maxLife: 0.25, color: '#ff4a3a' }); addFx(tgt.x, tgt.y - 6, '💀', '#ff6a4a', 12); }
+        if (tgt.hp <= 0) { tgt.alive = false; if (p.side === 'player') state.sp = Math.min(state.sp + 1, SP_MAX); state.rings.push({ x: tgt.x, y: tgt.y, r: 4, life: 0.25, maxLife: 0.25, color: '#ff4a3a' }); addFx(tgt.x, tgt.y - 6, '💀', '#ff6a4a', 12); }
         // 命中粒子
         for (let j = 0; j < 4; j++) {
           state.fx.push({

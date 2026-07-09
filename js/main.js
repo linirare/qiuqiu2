@@ -41,6 +41,14 @@ function update(dt) {
 
   state.time += dt;
 
+  // 被动SP恢复（SP<3时缓慢恢复，防死锁）
+  if (!state._spTimer) state._spTimer = 0;
+  state._spTimer += dt;
+  if (state._spTimer >= SP_PASSIVE && state.sp < 3) {
+    state._spTimer -= SP_PASSIVE;
+    state.sp = Math.min(state.sp + 1, SP_MAX);
+  }
+
   // 产球计时（玩家）
   state.ballTimer += dt;
   if (state.ballTimer >= BALL_SPAWN_INTERVAL) {
