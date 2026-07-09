@@ -35,7 +35,7 @@ body::before {
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 10;
+  z-index: 50;
   transition: opacity 0.22s ease, visibility 0.22s ease;
   opacity: 1; visibility: visible;
   padding: 18px;

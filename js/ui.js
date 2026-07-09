@@ -80,6 +80,9 @@ function refreshHomeStats() {
       return t ? '<span style="font-size:28px" title="' + t.name + '">' + t.icon + '</span>' : '';
     }).join('');
   }
+
+  // Refresh deck preview in home tab
+  if (typeof refreshDeckPreview === 'function') refreshDeckPreview();
 }
 
 /* Handle "开始突击" button click - switch to stages tab and start game */
@@ -411,10 +414,16 @@ function renderDeckBar() {
   html += '<button class="deck-edit-btn" id="btnEditDeck">✏️ 编辑编队</button>';
   container.innerHTML = html;
 
-  document.getElementById('btnEditDeck').addEventListener('click', function() {
-    // Show deck editor modal (reuse existing deck UI)
-    if (typeof showDeckEditor === 'function') showDeckEditor();
-  });
+  var editDeckBtn = document.getElementById('btnEditDeck');
+  if (editDeckBtn) {
+    editDeckBtn.addEventListener('click', function() {
+      var deckPanel = document.getElementById('deckPanel');
+      if (deckPanel) {
+        deckPanel.classList.remove('hide');
+        if (typeof renderDeckPanel === 'function') renderDeckPanel();
+      }
+    });
+  }
 }
 
 function renderCharGrid() {
@@ -461,7 +470,7 @@ function showCharDetail(typeId) {
   const inDeck = deck.includes(typeId);
 
   container.innerHTML =
-    '<button class="detail-close" onclick="document.getElementById(\'charDetail\').style.display=\'none\'">✕</button>' +
+    '<button class="detail-close" id="btnCharDetailClose">✕</button>' +
     '<div class="detail-header">' +
       '<div class="detail-icon">' + t.icon + '</div>' +
       '<div>' +
@@ -495,6 +504,14 @@ function showCharDetail(typeId) {
     '</div>';
 
   container.style.display = 'block';
+
+  // Bind close button
+  var closeBtn = container.querySelector('.detail-close');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      container.style.display = 'none';
+    });
+  }
 }
 
 function doUpgrade(typeId, stat) {
@@ -733,3 +750,12 @@ function initLeaderboardTab() {
     }
   }
 }
+/* Global deck editor access */
+function showDeckEditor() {
+  var deckPanel = document.getElementById('deckPanel');
+  if (deckPanel) {
+    deckPanel.classList.remove('hide');
+    if (typeof renderDeckPanel === 'function') renderDeckPanel();
+  }
+}
+
