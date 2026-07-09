@@ -23,6 +23,9 @@ function switchTab(name) {
     refreshHomeStats();
   } else if (name === 'stages') {
     if (state.phase !== 'playing') renderStageSelect();
+  } else if (name === 'characters') {
+    renderDeckBar();
+    renderCharGrid();
   }
 }
 
@@ -357,3 +360,145 @@ document.addEventListener('DOMContentLoaded', () => {
   // Default to home tab
   switchTab('home');
 });
+
+/* ===== Characters Tab ===== */
+
+const ROLE_NAMES = { tank:'坦克', front:'前线', rush:'突击', back:'后排', siege:'攻城', control:'控制', support:'支援', merge:'合成' };
+const RARITY_NAMES = { normal:'普通', rare:'稀有', epic:'史诗' };
+
+function renderDeckBar() {
+  const container = document.getElementById('deckBar');
+  if (!container) return;
+  const deck = activeDeck();
+  let html = '';
+  for (let i = 0; i < 5; i++) {
+    const typeId = deck[i];
+    const t = TYPES[typeId];
+    if (t) {
+      html += '<div class="deck-slot" title="' + t.name + '">' +
+        t.icon + '<span class="slot-badge">' + (i + 1) + '</span></div>';
+    }
+  }
+  html += '<button class="deck-edit-btn" id="btnEditDeck">✏️ 编辑编队</button>';
+  container.innerHTML = html;
+
+  document.getElementById('btnEditDeck').addEventListener('click', function() {
+    // Show deck editor modal (reuse existing deck UI)
+    if (typeof showDeckEditor === 'function') showDeckEditor();
+  });
+}
+
+function renderCharGrid() {
+  const container = document.getElementById('charGrid');
+  if (!container) return;
+  const deck = activeDeck();
+  let selectedId = container.dataset.selected || '';
+
+  let html = '';
+  for (const typeId of UNIT_POOL) {
+    const t = TYPES[typeId];
+    if (!t) continue;
+    const inDeck = deck.includes(typeId);
+    const sel = typeId === selectedId ? ' selected' : '';
+    const epic = t.rarity === 'epic' ? ' epic' : '';
+
+    html += '<div class="char-card' + sel + epic + '" data-type="' + typeId + '">' +
+      '<div class="char-icon">' + t.icon + '</div>' +
+      '<div class="char-name">' + (inDeck ? '✅ ' : '') + t.name + '</div>' +
+      '<div class="char-role">' + (ROLE_NAMES[t.role] || t.role) + ' · ' + (RARITY_NAMES[t.rarity] || t.rarity) + '</div>' +
+      '<div class="char-rarity ' + t.rarity + '">⚔' + t.atk + ' ❤' + t.hp + '</div>' +
+    '</div>';
+  }
+  container.innerHTML = html;
+
+  container.querySelectorAll('.char-card').forEach(card => {
+    card.addEventListener('click', function() {
+      showCharDetail(this.dataset.type);
+    });
+  });
+}
+
+function showCharDetail(typeId) {
+  const container = document.getElementById('charDetail');
+  if (!container) return;
+  const t = TYPES[typeId];
+  if (!t) return;
+
+  const atkLv = getUpgradeLv(meta, typeId, 'atk');
+  const hpLv = getUpgradeLv(meta, typeId, 'hp');
+  const atkCost = upgradeCost(atkLv);
+  const hpCost = upgradeCost(hpLv);
+  const deck = activeDeck();
+  const inDeck = deck.includes(typeId);
+
+  container.innerHTML =
+    '<button class="detail-close" onclick="document.getElementById(\'charDetail\').style.display=\'none\'">✕</button>' +
+    '<div class="detail-header">' +
+      '<div class="detail-icon">' + t.icon + '</div>' +
+      '<div>' +
+        '<div class="detail-name">' + t.name + '</div>' +
+        '<div class="char-rarity ' + t.rarity + '">' + (RARITY_NAMES[t.rarity] || t.rarity) + ' · ' + (ROLE_NAMES[t.role] || t.role) + '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="detail-desc">' + (t.desc || '') + '</div>' +
+    '<div class="detail-stats">' +
+      '<div class="detail-stat"><div class="ds-val">' + t.atk + '</div><div class="ds-label">基础攻击</div></div>' +
+      '<div class="detail-stat"><div class="ds-val">' + t.hp + '</div><div class="ds-label">基础生命</div></div>' +
+      '<div class="detail-stat"><div class="ds-val">' + (t.armor || 0) + '</div><div class="ds-label">护甲</div></div>' +
+      '<div class="detail-stat"><div class="ds-val">' + t.speed.toFixed(2) + '</div><div class="ds-label">攻速</div></div>' +
+    '</div>' +
+    '<div class="upgrade-row">' +
+      '<span class="up-label">⚔ 攻击升级</span>' +
+      '<span class="up-lv">Lv.' + atkLv + '</span>' +
+      (atkLv >= UPGRADE_MAX
+        ? '<button class="maxed">已满</button>'
+        : '<button onclick="doUpgrade(\'' + typeId + '\',\'atk\')">🍋 ' + atkCost + '</button>') +
+    '</div>' +
+    '<div class="upgrade-row">' +
+      '<span class="up-label">❤ 生命升级</span>' +
+      '<span class="up-lv">Lv.' + hpLv + '</span>' +
+      (hpLv >= UPGRADE_MAX
+        ? '<button class="maxed">已满</button>'
+        : '<button onclick="doUpgrade(\'' + typeId + '\',\'hp\')">🍋 ' + hpCost + '</button>') +
+    '</div>' +
+    '<div class="deck-toggle' + (inDeck ? ' in-deck' : '') + '" onclick="toggleDeckCard(\'' + typeId + '\')">' +
+      (inDeck ? '✅ 已上阵 · 点击移除' : '📥 加入编队') +
+    '</div>';
+
+  container.style.display = 'block';
+}
+
+function doUpgrade(typeId, stat) {
+  const lv = getUpgradeLv(meta, typeId, stat);
+  const cost = upgradeCost(lv);
+  if (meta.gold < cost) {
+    alert('金币不足！需要 🍋' + cost);
+    return;
+  }
+  meta.gold -= cost;
+  const key = upgradeKey(typeId, stat);
+  meta.upgrades[key] = (meta.upgrades[key] || 0) + 1;
+  saveMeta();
+  refreshHomeStats();
+  showCharDetail(typeId); // Refresh detail view
+}
+
+function toggleDeckCard(typeId) {
+  let deck = activeDeck().slice();
+  const idx = deck.indexOf(typeId);
+  if (idx >= 0) {
+    // Remove from deck
+    deck.splice(idx, 1);
+  } else {
+    // Add to deck (replace last slot if full)
+    if (deck.length >= 5) deck.pop();
+    deck.push(typeId);
+  }
+  // Ensure at least 1 card
+  if (deck.length === 0) deck = [typeId];
+  meta.deck = normalizeDeck(deck);
+  saveMeta();
+  renderDeckBar();
+  renderCharGrid();
+  showCharDetail(typeId); // Refresh detail
+}
