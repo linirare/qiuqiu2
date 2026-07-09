@@ -203,6 +203,7 @@ function onGameOver(win) {
     const totalReward = state.levelConfig.reward + bonus;
     meta.gold += totalReward;
     meta.totalWins++;
+    updateLeaderboard();
 
     title.textContent = state.levelConfig.isBoss ? '🏆 腐坏果堡攻破！' : '🎉 水果突击胜利！';
     const starsStr = '⭐'.repeat(stars) + '☆'.repeat(3 - stars);

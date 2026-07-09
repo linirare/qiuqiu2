@@ -28,6 +28,8 @@ function switchTab(name) {
     renderCharGrid();
   } else if (name === 'shop') {
     renderShop();
+  } else if (name === 'leaderboard') {
+    renderLeaderboard();
   }
 }
 
@@ -360,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Default to home tab
+  initLeaderboardTab();
   switchTab('home');
 });
 
@@ -581,4 +584,117 @@ function handleShopBuy(action) {
   saveMeta();
   refreshHomeStats();
   renderShop();
+}
+
+/* ===== Leaderboard Tab ===== */
+const LB_KEY = 'fruit_assault_leaderboard';
+let lbPlayerName = localStorage.getItem('fruit_assault_player_name') || '';
+
+function getTotalStars() {
+  return Object.values(meta.stars || {}).reduce(function(a, b) { return a + b; }, 0);
+}
+
+function loadLeaderboard() {
+  try {
+    return JSON.parse(localStorage.getItem(LB_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function saveLeaderboard(data) {
+  localStorage.setItem(LB_KEY, JSON.stringify(data));
+}
+
+function updateLeaderboard() {
+  if (!lbPlayerName) return;
+
+  var list = loadLeaderboard();
+  var totalStars = getTotalStars();
+
+  // Find existing entry for this player
+  var entry = null;
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].name === lbPlayerName) { entry = list[i]; break; }
+  }
+
+  if (!entry) {
+    entry = { name: lbPlayerName, level: 0, stars: 0, wins: 0 };
+    list.push(entry);
+  }
+
+  // Only update if better
+  if (meta.highestLevel > entry.level) entry.level = meta.highestLevel;
+  if (totalStars > entry.stars) entry.stars = totalStars;
+  if (meta.totalWins > entry.wins) entry.wins = meta.totalWins;
+
+  // Sort: level desc, stars desc, wins desc
+  list.sort(function(a, b) {
+    if (b.level !== a.level) return b.level - a.level;
+    if (b.stars !== a.stars) return b.stars - a.stars;
+    return b.wins - a.wins;
+  });
+
+  saveLeaderboard(list);
+}
+
+function renderLeaderboard() {
+  var nameDiv = document.getElementById('lbPlayerName');
+  var listDiv = document.getElementById('lbList');
+  if (!listDiv) return;
+
+  // Show/hide name input
+  if (!lbPlayerName) {
+    if (nameDiv) nameDiv.style.display = 'flex';
+  } else {
+    if (nameDiv) nameDiv.style.display = 'none';
+  }
+
+  var list = loadLeaderboard();
+  var totalStars = getTotalStars();
+
+  if (list.length === 0 && !lbPlayerName) {
+    listDiv.innerHTML = '<div class="lb-empty">🏆<br>输入昵称加入天梯排行</div>';
+    return;
+  }
+
+  if (list.length === 0) {
+    // Player has name but no records yet
+    listDiv.innerHTML = '<div class="lb-empty">📋<br>通关关卡后出现在排行榜</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var entry = list[i];
+    var rank = i + 1;
+    var rankCls = rank === 1 ? ' r1' : (rank === 2 ? ' r2' : (rank === 3 ? ' r3' : ''));
+    var isMe = lbPlayerName && entry.name === lbPlayerName;
+    var medal = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : rank));
+
+    html += '<div class="lb-row' + (isMe ? ' me' : '') + '">' +
+      '<div class="lb-rank' + rankCls + '">' + medal + '</div>' +
+      '<div class="lb-info">' +
+        '<div class="lb-name">' + entry.name + (isMe ? ' ⭐' : '') + '</div>' +
+        '<div class="lb-stats">🚩' + entry.level + '关 · ⭐' + entry.stars + '星 · 🏆' + entry.wins + '胜</div>' +
+      '</div>' +
+      '<div class="lb-score">#' + rank + '</div>' +
+    '</div>';
+  }
+  listDiv.innerHTML = html;
+}
+
+function initLeaderboardTab() {
+  // Bind name save
+  var saveBtn = document.getElementById('lbNameSave');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', function() {
+      var input = document.getElementById('lbNameInput');
+      var name = (input.value || '').trim();
+      if (name) {
+        lbPlayerName = name;
+        localStorage.setItem('fruit_assault_player_name', name);
+        updateLeaderboard();
+        renderLeaderboard();
+      }
+    });
+  }
 }

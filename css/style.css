@@ -550,3 +550,60 @@ body::before {
 .shop-item .shop-price.cant-afford {
   background: #eee; color: #aaa; cursor: not-allowed;
 }
+
+/* ===== Leaderboard Tab ===== */
+.lb-header {
+  padding: 16px 16px 8px;
+  text-align: center;
+}
+.lb-header h2 { color: #2c8d3f; font-size: 20px; }
+.lb-header .sub { color: #7fa05a; font-size: 12px; }
+
+.lb-player-name {
+  display: flex; gap: 8px;
+  padding: 10px 16px;
+  justify-content: center;
+}
+.lb-player-name input {
+  padding: 10px 14px; border-radius: 12px;
+  border: 2px solid rgba(120,180,80,0.3);
+  font-size: 14px; text-align: center;
+  width: 160px; outline: none;
+}
+.lb-player-name input:focus { border-color: #ffc93c; }
+.lb-player-name button {
+  padding: 10px 18px; border-radius: 12px;
+  border: none; background: linear-gradient(180deg, #78df61, #2eb45a);
+  color: #fff; font-weight: 700; cursor: pointer;
+}
+
+.lb-list {
+  padding: 8px 16px 100px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.lb-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px;
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(120,180,80,0.12);
+  border-radius: 14px;
+}
+.lb-row.me { border-color: #ffc93c; background: rgba(255,251,220,0.8); }
+.lb-rank {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px;
+  background: rgba(120,180,80,0.12); color: #4a8530;
+}
+.lb-rank.r1 { background: #ffc93c; color: #5b3f05; font-size: 16px; }
+.lb-rank.r2 { background: #c0c0c0; color: #444; font-size: 16px; }
+.lb-rank.r3 { background: #cd7f32; color: #fff; font-size: 16px; }
+.lb-info { flex: 1; }
+.lb-name { font-size: 14px; font-weight: 700; color: #315326; }
+.lb-stats { font-size: 10px; color: #7fa05a; }
+.lb-score { font-size: 13px; font-weight: 700; color: #ff9f37; text-align: right; }
+
+.lb-empty {
+  text-align: center; padding: 40px 20px;
+  color: #a0b88e; font-size: 13px;
+}
