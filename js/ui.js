@@ -84,14 +84,16 @@ function refreshHomeStats() {
 
 /* Handle "开始突击" button click - switch to stages tab and start game */
 function startBattle() {
+  var level = meta.highestLevel || 1;
+  // Switch to stages tab first
   switchTab('stages');
-  // Hide stage select, show canvas for direct battle start
-  const stageArea = document.getElementById('stageSelectArea');
-  if (stageArea) stageArea.style.display = 'none';
-  document.getElementById('wrap').style.display = 'block';
-  // Start at player's highest available level
-  const level = meta.highestLevel || 1;
-  initLevel(level);
+  // Short delay to let tab render, then start the stage
+  setTimeout(function() {
+    hideBottomNav();
+    document.getElementById('stageSelectArea').style.display = 'none';
+    document.getElementById('wrap').style.display = 'block';
+    initLevel(level);
+  }, 150);
 }
 
 function renderStageSelect() {
@@ -335,9 +337,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnNext').addEventListener('click', function() {
     document.getElementById('resultPanel').classList.add('hide');
-    const nextLevel = (state.currentLevel || 1) + 1;
+    var nextLevel = (state.currentLevel || 1) + 1;
     if (nextLevel <= 20) startStage(nextLevel);
-    else switchTab('stages');
+    else {
+      // All stages cleared!
+      meta.highestLevel = 21; // Mark as fully cleared
+      saveMeta();
+      showStageSelect();
+    }
   });
 
   document.getElementById('btnMenu').addEventListener('click', function() {

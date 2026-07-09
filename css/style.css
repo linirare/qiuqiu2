@@ -72,23 +72,6 @@ body::before {
     linear-gradient(180deg, rgba(255,248,188,0.94), rgba(162,239,137,0.92)),
     radial-gradient(circle at 50% 54%, rgba(255,211,71,0.36), transparent 34%);
 }
-.hero-preview::before {
-  content: ""; position: absolute; inset: 18px 28px;
-  border: 1px dashed rgba(48,153,64,0.28);
-  border-radius: 999px;
-}
-.castle {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  padding: 5px 18px; border-radius: 999px;
-  font-size: 12px; font-weight: 900;
-  color: #fff; border: 2px solid rgba(255,255,255,0.72);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.10);
-}
-.enemy-castle { top: 15px; background: linear-gradient(180deg, #ff7891, #f13d5d); }
-.player-camp { bottom: 13px; background: linear-gradient(180deg, #69dc73, #25a953); }
-.lane-line { position: absolute; left: 50%; top: 44px; bottom: 42px; width: 5px; transform: translateX(-50%); border-radius: 8px; background: linear-gradient(#ff5d6c, #ffc93c, #53c96a); opacity: 0.92; }
-.troop-row { position: absolute; left: 50%; top: 62px; transform: translateX(-50%); display: flex; gap: 8px; }
-.troop-row span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 13px; background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.78); font-size: 18px; box-shadow: 0 5px 10px rgba(75,158,70,0.12); }
 .preview-badge {
   font-size: 18px; font-weight: 900; color: #2c8d3f;
   margin-bottom: 8px;

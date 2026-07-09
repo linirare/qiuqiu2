@@ -218,6 +218,11 @@ function onGameOver(win) {
     playSfx('win');
     if (state.currentLevel >= meta.highestLevel) meta.highestLevel = state.currentLevel + 1;
     nextBtn.classList.remove('hide');
+    if (state.currentLevel >= 20) {
+      nextBtn.textContent = '🎉 全部通关！';
+    } else {
+      nextBtn.textContent = '下一关';
+    }
   } else {
     title.textContent = '💀 果堡失守';
     const elapsed = Math.floor(state.time);
