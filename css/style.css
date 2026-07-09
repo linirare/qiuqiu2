@@ -292,3 +292,76 @@ body::before {
   color: #7fa05a;
   margin-top: 2px;
 }
+
+/* ===== Stage Select ===== */
+.stage-header {
+  padding: 16px 16px 8px;
+  text-align: center;
+}
+
+.stage-header h2 {
+  color: #2c8d3f;
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.stage-header .sub {
+  color: #7fa05a;
+  font-size: 12px;
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 8px 16px 80px;
+}
+
+.stage-card {
+  background: rgba(255,255,255,0.7);
+  border: 2px solid rgba(120,180,80,0.2);
+  border-radius: 16px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stage-card:active {
+  transform: scale(0.95);
+}
+
+.stage-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+.stage-card.cleared {
+  border-color: rgba(255,201,60,0.4);
+  background: rgba(255,251,220,0.8);
+}
+
+.stage-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: #315326;
+}
+
+.stage-stars {
+  font-size: 11px;
+  margin: 4px 0;
+}
+
+.stage-info {
+  font-size: 10px;
+  color: #7fa05a;
+}
+
+.stage-reward {
+  font-size: 11px;
+  color: #ff9f37;
+  font-weight: 600;
+  margin-top: 2px;
+}

@@ -61,6 +61,10 @@ function refreshHomeStats() {
 /* Handle "开始突击" button click - switch to stages tab and start game */
 function startBattle() {
   switchTab('stages');
+  // Hide stage select, show canvas for direct battle start
+  const stageArea = document.getElementById('stageSelectArea');
+  if (stageArea) stageArea.style.display = 'none';
+  document.getElementById('wrap').style.display = 'block';
   // Start at player's highest available level
   const level = meta.highestLevel || 1;
   initLevel(level);
@@ -69,7 +73,56 @@ function startBattle() {
 function renderStageSelect() {
   const container = document.getElementById('stageSelectArea');
   if (!container) return;
-  container.innerHTML = '<div style="padding:20px;text-align:center;color:#7fa05a;">关卡选择 · 开发中</div>';
+
+  const maxStage = 20;
+  const unlocked = meta.highestLevel || 1;
+  const stars = meta.stars || {};
+
+  let html = '<div class="stage-header"><h2>🚩 选择关卡</h2><p class="sub">共 ' + maxStage + ' 关 · 当前进度：第 ' + unlocked + ' 关</p></div>';
+  html += '<div class="stage-grid">';
+
+  for (let k = 1; k <= maxStage; k++) {
+    const lv = generateLevel(k);
+    const locked = k > unlocked;
+    const starCount = stars[k] || 0;
+    const starsStr = locked ? '🔒' : ('⭐'.repeat(starCount) + '☆'.repeat(3 - starCount));
+    const cls = locked ? 'stage-card locked' : (starCount === 3 ? 'stage-card cleared' : 'stage-card');
+
+    html += '<div class="' + cls + '" data-stage="' + k + '">' +
+      '<div class="stage-num">' + (lv.isBoss ? '👑' : '') + '第' + k + '关</div>' +
+      '<div class="stage-stars">' + starsStr + '</div>' +
+      '<div class="stage-info">' + (lv.isBoss ? 'BOSS' : '敌军 Lv' + lv.enemyInitLevel.toFixed(1)) + '</div>' +
+      '<div class="stage-reward">🍋 +' + lv.reward + '</div>' +
+    '</div>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Bind click handlers
+  container.querySelectorAll('.stage-card:not(.locked)').forEach(card => {
+    card.addEventListener('click', function() {
+      const stage = parseInt(this.dataset.stage);
+      startStage(stage);
+    });
+  });
+}
+
+function startStage(k) {
+  hideBottomNav();
+  // Hide stage select, show canvas
+  document.getElementById('stageSelectArea').style.display = 'none';
+  document.getElementById('wrap').style.display = 'block';
+  initLevel(k);
+}
+
+function showStageSelect() {
+  state.phase = 'menu';
+  showBottomNav();
+  document.getElementById('stageSelectArea').style.display = 'block';
+  document.getElementById('wrap').style.display = 'none';
+  renderStageSelect();
+  switchTab('stages');
 }
 
 /* ——— 科技项配置：按 12 个水果球动态生成 ——— */
@@ -250,15 +303,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('btnUpClose').addEventListener('click', () => document.getElementById('upgradePanel').classList.add('hide'));
   document.getElementById('btnHelpClose').addEventListener('click', () => document.getElementById('helpPanel').classList.add('hide'));
-  document.getElementById('btnRetry').addEventListener('click', () => { document.getElementById('resultPanel').classList.add('hide'); initLevel(state.currentLevel); });
-  document.getElementById('btnMenu').addEventListener('click', () => {
+  // Result panel buttons
+  document.getElementById('btnRetry').addEventListener('click', function() {
     document.getElementById('resultPanel').classList.add('hide');
-    state.phase = 'menu';
-    switchTab('home');
-    refreshGold();
+    const currentLevel = state.currentLevel || 1;
+    startStage(currentLevel);
   });
-  document.getElementById('btnNext').addEventListener('click', () => { document.getElementById('resultPanel').classList.add('hide'); initLevel(state.currentLevel + 1); });
+  document.getElementById('btnNext').addEventListener('click', function() {
+    document.getElementById('resultPanel').classList.add('hide');
+    const nextLevel = (state.currentLevel || 1) + 1;
+    if (nextLevel <= 20) startStage(nextLevel);
+    else switchTab('stages');
+  });
 
+  document.getElementById('btnMenu').addEventListener('click', function() {
+    document.getElementById('resultPanel').classList.add('hide');
+    showStageSelect();
+  });
   const simBtn = document.getElementById('btnSim');
   if (simBtn) {
     simBtn.addEventListener('click', () => {

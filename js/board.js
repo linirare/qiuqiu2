@@ -228,4 +228,5 @@ function initLevel(k) {
   addFx(W / 2, LAYOUT.playerBoardY - 14, `上阵：${activeDeck().map(id => TYPES[id].icon).join(' ')} · 只刷这5种`, THEME.gold, 14);
   state.phase = 'playing';
   resetAI();
+  if (typeof hideBottomNav === 'function') hideBottomNav();
 }

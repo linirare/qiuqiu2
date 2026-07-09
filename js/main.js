@@ -182,6 +182,7 @@ function reportHtml() {
 }
 
 function onGameOver(win) {
+  showBottomNav();
   const panel = document.getElementById('resultPanel');
   const title = document.getElementById('resultTitle');
   const detail = document.getElementById('resultDetail');
