@@ -114,17 +114,17 @@ const COUNTER = {
 };
 const COUNTER_DMG = 1.55;
 
-const LEVEL_MUL = [0, 1.0, 1.58, 2.34, 3.32, 4.62, 6.3, 8.5];
+const LEVEL_MUL = [0, 1.0, 1.65, 2.60, 4.00, 6.00, 8.50, 12.00];
 const MAX_LEVEL = 7;
 const BASE_WALL_HP = 72;
 const SIEGE_SLOTS_PER_LANE = 3;
 const BALL_SPAWN_INTERVAL = 4.4;
 const SOLDIER_SPAWN_INTERVAL = 5;
-const SPAWN_COOLDOWNS = [0, 5.6, 4.9, 4.25, 3.65, 3.15, 2.7, 2.35];
+const SPAWN_COOLDOWNS = [0, 6.5, 5.5, 4.5, 3.5, 2.8, 2.2, 1.8];
 const OVERFLOW_MAX = 10;
 const MAX_SOLDIERS = 24;
 const SP_MAX = 18;
-const SP_PASSIVE = 3.6;
+const SP_PASSIVE = 3.0;
 
 function upgradeCost(lv) { return 10 + lv * 8; }
 function stageReward(k) { return k * 8 + 18; }
