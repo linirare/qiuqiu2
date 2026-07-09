@@ -13,6 +13,16 @@ function eventPoint(ev) {
 }
 
 /* ——— 双击强制出兵 ——— */
+
+/* ——— 合并 SP 判断 ——— */
+function mergeWouldCostSP(src, dst) {
+  if (!src || !dst) return false;
+  if (src.level !== dst.level) return false;
+  if (src.level >= MAX_LEVEL) return false;
+  if (isMergeSupport(src) && isMergeSupport(dst)) return false;
+  return true;
+}
+
 let lastTap = { time: 0, r: -1, c: -1 };
 
 function onDown(ev) {
@@ -175,8 +185,16 @@ function onUp(ev) {
       addFx(center.x, center.y - 22, '移动', THEME.safe, 11);
     }
   } else {
+    // 合并消耗 SP：检查是否付得起
+    if (mergeWouldCostSP(d.unit, targetBall) && state.sp < 1) {
+      const center = slotCenter(toR, toC, false);
+      addFx(center.x, center.y - 24, '果汁不足 · 无法合成', THEME.accent, 13);
+      state.drag = null;
+      return;
+    }
     const result = tryMerge(state.playerSlots, d.fromR, d.fromC, toR, toC);
     if (result && result.merged) {
+      state.sp = Math.max(0, state.sp - 1);
       state.merges++;
       playSfx('merge');
       const ct = TYPES[result.type];
