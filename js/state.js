@@ -151,7 +151,7 @@ function getSpMax(meta) {
   return SP_MAX + (meta.spLv || 0);
 }
 function getSpRecoverCap(meta) {
-  return 6 + Math.floor((meta.spLv || 0) / 2);
+  return 8 + Math.floor((meta.spLv || 0) / 2);
 }
 
 /* ——— init ——— */
