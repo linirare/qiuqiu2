@@ -70,6 +70,16 @@ function refreshHomeStats() {
   if (totalWinsEl) totalWinsEl.textContent = meta.totalWins || 0;
   const highestLevelEl = document.getElementById('homeHighestLevel');
   if (highestLevelEl) highestLevelEl.textContent = meta.highestLevel || 1;
+
+  // Update deck preview in home
+  var previewEl = document.getElementById('menuDeckPreview');
+  if (previewEl) {
+    var deck = activeDeck();
+    previewEl.innerHTML = deck.map(function(id) {
+      var t = TYPES[id];
+      return t ? '<span style="font-size:28px" title="' + t.name + '">' + t.icon + '</span>' : '';
+    }).join('');
+  }
 }
 
 /* Handle "开始突击" button click - switch to stages tab and start game */
@@ -693,18 +703,26 @@ function renderLeaderboard() {
 }
 
 function initLeaderboardTab() {
-  // Bind name save
   var saveBtn = document.getElementById('lbNameSave');
+  var nameInput = document.getElementById('lbNameInput');
+
   if (saveBtn) {
-    saveBtn.addEventListener('click', function() {
-      var input = document.getElementById('lbNameInput');
-      var name = (input.value || '').trim();
-      if (name) {
-        lbPlayerName = name;
-        localStorage.setItem('fruit_assault_player_name', name);
-        updateLeaderboard();
-        renderLeaderboard();
-      }
+    saveBtn.addEventListener('click', savePlayerName);
+  }
+  if (nameInput) {
+    nameInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') savePlayerName();
     });
+  }
+
+  function savePlayerName() {
+    var input = document.getElementById('lbNameInput');
+    var name = (input.value || '').trim();
+    if (name) {
+      lbPlayerName = name;
+      localStorage.setItem('fruit_assault_player_name', name);
+      updateLeaderboard();
+      renderLeaderboard();
+    }
   }
 }

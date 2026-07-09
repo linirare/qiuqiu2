@@ -63,7 +63,8 @@ body::before {
 .logo-mark { font-size: 34px; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 18px; background: linear-gradient(180deg, #fff176, #65d66e); border: 2px solid rgba(255,255,255,0.78); box-shadow: 0 7px 16px rgba(87,171,73,0.22); }
 .hero-preview {
   position: relative;
-  width: 100%; height: 156px;
+  width: 100%; height: auto;
+  padding: 20px 16px;
   border-radius: 20px;
   overflow: hidden;
   border: 2px solid rgba(255,255,255,0.78);
@@ -88,6 +89,17 @@ body::before {
 .lane-line { position: absolute; left: 50%; top: 44px; bottom: 42px; width: 5px; transform: translateX(-50%); border-radius: 8px; background: linear-gradient(#ff5d6c, #ffc93c, #53c96a); opacity: 0.92; }
 .troop-row { position: absolute; left: 50%; top: 62px; transform: translateX(-50%); display: flex; gap: 8px; }
 .troop-row span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 13px; background: rgba(255,255,255,0.58); border: 2px solid rgba(255,255,255,0.78); font-size: 18px; box-shadow: 0 5px 10px rgba(75,158,70,0.12); }
+.preview-badge {
+  font-size: 18px; font-weight: 900; color: #2c8d3f;
+  margin-bottom: 8px;
+}
+.preview-deck-row {
+  display: flex; gap: 8px; justify-content: center;
+  font-size: 32px; margin: 8px 0;
+}
+.preview-sub {
+  font-size: 12px; color: #89a86a;
+}
 .menu-stats { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .menu-stats span { padding: 8px 10px; border-radius: 14px; text-align: center; background: rgba(255,255,255,0.58); border: 1px solid rgba(52,180,78,0.16); font-size: 13px; color: #5f8540; }
 .menu-stats b { color: #2c8d3f; }
@@ -180,11 +192,13 @@ body::before {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 8px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
-
 .tab-content.active {
   display: flex;
   flex-direction: column;
+  opacity: 1;
 }
 
 #tab-stages {
@@ -299,76 +313,54 @@ body::before {
 
 /* ===== Stage Select ===== */
 .stage-header {
-  padding: 16px 16px 8px;
+  padding: 20px 16px 12px;
   text-align: center;
 }
-
-.stage-header h2 {
-  color: #2c8d3f;
-  font-size: 20px;
-  margin-bottom: 4px;
-}
-
-.stage-header .sub {
-  color: #7fa05a;
-  font-size: 12px;
-}
+.stage-header h2 { color: #2c8d3f; font-size: 22px; margin-bottom: 4px; }
+.stage-header .sub { color: #89a86a; font-size: 13px; }
 
 .stage-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
-  padding: 8px 16px 80px;
+  padding: 8px 16px 90px;
 }
-
 .stage-card {
-  background: rgba(255,255,255,0.7);
-  border: 2px solid rgba(120,180,80,0.2);
-  border-radius: 16px;
-  padding: 12px 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(240,255,220,0.78));
+  border: 2px solid rgba(120,180,80,0.18);
+  border-radius: 18px;
+  padding: 14px 10px;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
 }
-
-.stage-card:active {
-  transform: scale(0.95);
+.stage-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #78df61, #ffc93c);
+  opacity: 0;
+  transition: opacity 0.2s;
 }
-
+.stage-card:active { transform: scale(0.95); box-shadow: 0 4px 16px rgba(44,141,63,0.18); }
+.stage-card:active::before { opacity: 1; }
 .stage-card.locked {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
-  border-style: dashed;
+  filter: grayscale(0.5);
 }
-
 .stage-card.cleared {
-  border-color: rgba(255,201,60,0.4);
-  background: rgba(255,251,220,0.8);
+  border-color: rgba(255,201,60,0.45);
+  background: linear-gradient(180deg, rgba(255,252,230,0.9), rgba(255,248,200,0.82));
 }
-
-.stage-num {
-  font-size: 13px;
-  font-weight: 700;
-  color: #315326;
-}
-
-.stage-stars {
-  font-size: 11px;
-  margin: 4px 0;
-}
-
-.stage-info {
-  font-size: 10px;
-  color: #7fa05a;
-}
-
-.stage-reward {
-  font-size: 11px;
-  color: #ff9f37;
-  font-weight: 600;
-  margin-top: 2px;
-}
+.stage-card.cleared::before { opacity: 0.7; }
+.stage-num { font-size: 13px; font-weight: 800; color: #315326; }
+.stage-stars { font-size: 12px; margin: 5px 0; letter-spacing: 1px; }
+.stage-info { font-size: 10px; color: #89a86a; }
+.stage-reward { font-size: 12px; color: #ff9f37; font-weight: 700; margin-top: 3px; }
 
 /* ===== Characters Tab ===== */
 .char-header {
