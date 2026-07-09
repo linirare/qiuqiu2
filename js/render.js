@@ -77,6 +77,16 @@ function drawBoard(slots, isEnemy, dragHint = null) {
       }
 
       // 磁吸高亮
+      const isSnap = state.drag?.nearestSnap && state.drag.nearestSnap.r === r && state.drag.nearestSnap.c === c;
+      if (isSnap && !isEnemy) {
+        ctx.shadowColor = '#ffe45a';
+        ctx.shadowBlur = 18;
+        ctx.strokeStyle = '#ffe45a';
+        ctx.lineWidth = 2.5;
+        roundRect(x + 2, y + 2, CELL - 4, CELL - 4, 8);
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
     }
   }
 }
