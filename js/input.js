@@ -49,7 +49,23 @@ function onDown(ev) {
   if (!s) { lastTap.time = 0; return; }
   const [r, c] = s;
   const ball = state.playerSlots[r][c];
-  if (!ball) { lastTap.time = 0; return; }
+  if (!ball) {
+    // 手动 SP 召唤：点击空格消耗 1 SP 随机从卡组抽球
+    if (state.phase === 'playing' && state.sp > 0) {
+      state.sp -= 1;
+      const type = randomType(activeDeck());
+      state.playerSlots[r][c] = createBall(type, 1);
+      const center = slotCenter(r, c, false);
+      state.rings.push({ x: center.x, y: center.y, r: 7, life: 0.32, maxLife: 0.32, color: THEME.gold });
+      addFx(center.x, center.y - 24, `${TYPES[type].icon} 召唤 -1 SP`, THEME.gold, 13);
+      playSfx('merge');
+    } else if (state.phase === 'playing') {
+      const center = slotCenter(r, c, false);
+      addFx(center.x, center.y - 22, '果汁不足', THEME.accent, 12);
+    }
+    lastTap.time = 0;
+    return;
+  }
 
   const now = performance.now();
   if (lastTap.r === r && lastTap.c === c && (now - lastTap.time) < 350) {

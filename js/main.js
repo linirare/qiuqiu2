@@ -79,19 +79,7 @@ function update(dt) {
     addFx(42, LAYOUT.fieldY + LAYOUT.fieldH - 46, '+1果汁', THEME.gold, 11);
   }
 
-  // 玩家自动补充水果营
-  state.ballTimer += dt;
-  if (state.ballTimer >= BALL_SPAWN_INTERVAL) {
-    state.ballTimer -= BALL_SPAWN_INTERVAL;
-    const added = autoSpawnBall(state.playerSlots);
-    if (added) {
-      const center = slotCenter(added[0], added[1], false);
-      state.rings.push({ x: center.x, y: center.y, r: 6, life: 0.25, maxLife: 0.25, color: 'rgba(255,228,90,0.65)' });
-    } else {
-      pushOverflow(state.overflowQueue, randomType(), 1);
-    }
-    drainOverflow(state.playerSlots, state.overflowQueue);
-  }
+  // 玩家不再自动补球 —— 手动点击空格消耗 SP 召唤（见 input.js）
 
   // 敌方自动补充水果营：使用关卡配置里的敌方补兵节奏
   state.enemyBallTimer += dt;
